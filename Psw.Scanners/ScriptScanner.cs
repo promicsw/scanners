@@ -161,7 +161,7 @@ namespace Psw.Scanners
         /// <summary>
         /// Scan a List of the form: ( item1, item 2, ...)<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
-        /// - Item may be: A delimited string (recorded without delimiters), all text up to next separator or newline,  a delimited block (recorded without block delimiters)<br/>
+        /// - Item: Delimited string (recorded without delimiters) | all text up to next separator or newline | block (recorded without block delimiters)<br/>
         /// - All items are trimmed and blank items are not recorded.
         /// </summary>
         /// <param name="delims">Opening and closing list delimiter (default = "()") </param>
@@ -213,7 +213,7 @@ namespace Psw.Scanners
         /// <summary>
         /// Scan a List of the form: ( item1, item 2 ... )<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
-        /// - Item may be: A delimited string (recorded without delimiters), all text up to next separator or newline, a delimited block (recorded without block delimiters)<br/>
+        /// - Item: Delimited string (recorded without delimiters) | all text up to next separator or newline | block (recorded without block delimiters)<br/>
         /// - All items are trimmed and blank items are not recorded.
         /// </summary>
         /// <param name="delims">Opening and closing list delimiter (default = "()") </param>
