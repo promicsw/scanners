@@ -44,9 +44,9 @@ namespace Psw.Scanners
         /// </summary>
         public char Delim { get; private set; }            // Last Delimiter logged
         /// <summary>
-        /// Get matching string the last IsAnyString or SkipToAnyStr method
+        /// Get the matching string for the last IsAnyString or SkipToAnyStr method call.
         /// </summary>
-        public string Match { get; private set; }          // Last ...AnyStr match
+        public string Match { get; private set; }          
 
         protected char _Current { get; private set; }      // Current char at index
 
@@ -103,7 +103,9 @@ namespace Psw.Scanners
         /// <summary>
         /// Return current Token Trimmed
         /// </summary>
-        public string TrimToken() => Token.Trim();
+        public string TrimToken => Token.Trim();
+
+        public string TokenStripComments => ScriptScanner.StripComments(Token);
 
         // Source Management ==================================================
 
