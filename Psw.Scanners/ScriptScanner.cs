@@ -117,14 +117,16 @@ namespace Psw.Scanners
                     else continue;
                 }
 
-                if (IsComment()) continue; // SkipWSC will skip it
+                if (IsPeekCh('/')) {
+                    if (IsComment()) continue; // SkipWSC will skip it
+                    else NextCh(); // skip over
+                }
 
                 if (IsStringDelim()) { // Skip over string that doesn't span a line else ignore
                     var delim = NextCh();
                     int pos = Index;
                     SkipToAny(delim+_nl);
-                    if (IsCh(delim)) NextCh();
-                    else Index = pos;
+                    if (!IsCh(delim)) Index = pos;
                 }  
             }
 
@@ -161,13 +163,56 @@ namespace Psw.Scanners
         /// <summary>
         /// Scan a List of the form: ( item1, item 2, ...)<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
-        /// - Item: Delimited string (recorded without delimiters) | all text up to next separator or newline | block (recorded without block delimiters)<br/>
-        /// - All items are trimmed and blank items are not recorded.
+        /// - Item type 1: All text up to next closing delim or separator (logged trimmed)
+        /// - Item type 2: A string literal - may NOT span a line! (logged verbatim)
+        /// - Item type 3: Block delimited text (logged verbatim) - use for multi-line text. 
+        /// - Blank items are not recorded.
         /// </summary>
         /// <param name="delims">Opening and closing list delimiter (default = "()") </param>
-        /// <param name="separator">List item separator (default = ,). Note: newlines are also separators</param>
-        /// <param name="block">Opening an closing Block delimiters (default = "[]")</param>
-        /// <returns>List of strings (Index after list), else null and error logged in ErrorLog</returns>
+        /// <param name="separator">List item separator (default = ,)</param>
+        /// <param name="block">Opening and closing Block delimiters (default = "[]")</param>
+        /// <returns>List of strings else null and error logged in ErrorLog</returns>
+        public List<string>? ScanList(string delims = "()", char separator = ',', string block = "[]") {
+
+            if (!ValidBlockDelims(delims)) {
+                LogError($"Invalid delimiters \"{delims}\" defined in call to ScanList", "Scan List");
+                return null;
+            }
+
+            var list = new List<string>();
+            char cOpen = delims[0], cClose = delims[1];
+            bool checkBlock = ValidBlockDelims(block);
+
+            SkipWSC();
+            if (!IsCh(cOpen)) { LogError($"{cOpen} expected", "ScanList"); return null; }
+
+            while (!IsEos) {
+                SkipWS();
+                if (IsCh(cClose)) break;       // Done
+                if (IsCh(separator)) continue; // Absorb separator
+
+                if (checkBlock && IsPeekCh(block[0])) {
+                    if (ScanBlock(block)) list.Add(Token); 
+                    else return null;
+                }
+                else if (IsStringDelim()) {
+                    if (StrLit()) list.Add(Token);
+                    else return null;
+                }
+                else if (ScanToAny("" + separator + cClose)) {
+                    list.Add(TrimToken);
+                }
+                else {
+                    LogError($"{cClose} or {separator} expected", "ScanList");
+                    return null;
+                }
+            }
+            
+            return list;
+
+        }
+
+        /*
         public List<string>? ScanList(string delims = "()", char separator = ',', string block = "[]") {
 
             if (!ValidBlockDelims(delims)) {
@@ -209,15 +254,18 @@ namespace Psw.Scanners
             return list;
 
         }
+        */
 
         /// <summary>
         /// Scan a List of the form: ( item1, item 2 ... )<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
-        /// - Item: Delimited string (recorded without delimiters) | all text up to next separator or newline | block (recorded without block delimiters)<br/>
-        /// - All items are trimmed and blank items are not recorded.
+        /// - Item type 1: All text up to next closing delim or separator (logged trimmed)
+        /// - Item type 2: A string literal - may NOT span a line! (logged verbatim)
+        /// - Item type 3: Block delimited text (logged verbatim) - use for multi-line text. 
+        /// - Blank items are not recorded.
         /// </summary>
         /// <param name="delims">Opening and closing list delimiter (default = "()") </param>
-        /// <param name="separator">List item separator (default = ,). Note: newlines are also separators</param>
+        /// <param name="separator">List item separator (default = ,)</param>
         /// <param name="block">Opening an closing Block delimiters (default = "[]")</param>
         /// <returns>True and List of strings in out list (Index after list), else false and error logged in ErrorLog</returns>
         public bool ScanList(out List<string> list, string delims = "()", char separator = ',', string block = "[]") {

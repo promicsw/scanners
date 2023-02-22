@@ -1,15 +1,12 @@
-# Script Utilities
-A set of high performance C# utilities incorporating Scanners for text parsing, 
-structured Text Writing
-and sophisticated Parser building (see [Flow Expressions](#id-fex)).
+# Scanners
+A set of high performance Scanners implemented in C# for low-level text/script parsing.  
 
-
-## Scanners
+## Scanner overview
 A Scanner is used to scan over and extract *Tokens* from text, check for strings or characters (delimiters), skip over text etc.
 
 > Tokens represent basic units of meaning in the input source code, such as keywords, identifiers, operators and special characters.
 
-The library provides associated utilities and low level scanners (extensible) with a comprehensive set of methods:
+The library provides associated utilities and low level scanners (extensible) with a comprehensive set of methods. See the following reference documents for details:
 - [TextScanner](Docs/TextScanner.md): Primary core text scanning facilities
 - [ScriptScanner](Docs/ScriptScanner.md): Extends TextScanner with facilities useful for scanning *scripts* 
 - [ScanErrorLog](Docs/ScanErrorLog.md): Class to log and output scan error messages
@@ -17,6 +14,8 @@ The library provides associated utilities and low level scanners (extensible) wi
 
 **Simple scanning example:**
 ```csharp
+using Psw.Scanners;
+
 bool ScanSample() {
     var sample = " FuncName (prm1, 'prm2') { sample body }"; // Text to parse
     var scn = new ScriptScanner(sample);
@@ -42,7 +41,7 @@ bool ScanSample() {
     if (!scn.IsPeekCh('{')) return Error("{ expected");
 
     if (!scn.ScanBlock()) return Error("body expected");
-    var body = scn.TrimToken();
+    var body = scn.TrimToken;
 
     Console.WriteLine($"Result: {funcName}({string.Join(',', prm)}) {{{body}}}");
     return true;
@@ -59,7 +58,7 @@ Sample Error
 Parse error: { expected
 ```
 
-As a teaser, the above parsing can be implemented using [Flow Expressions](#id-fex)
+### As a *teaser*, the above parsing can be implemented using [Flow Expressions](#id-fex)
 ```csharp
 void FexScanSample() {
     var fex = new FexParser(" FuncName (prm1, 'prm2') { sample body }");
@@ -77,59 +76,8 @@ void FexScanSample() {
 }
 ```
 
-## Structured text writer
-Provides methods for writing/generating structured text output (to an internal or external StringBuffer) with automatic indentation management via a fluent API.
 
-Includes some methods for writing structured HTML with automatic tag management, and may be further extended to generate any kind of output.
-- [IndentTextWriter](Docs/IndentTextWriter.md): Reference document.
-
-Example text writing:
-```csharp
-void WriterSample() {
-    var w = new IndentTextWriter();
-    w.WL("class ClassName")
-     .WL("{").Indent()
-     .WL("public int SomeValue { get; set; }")
-     .WL()
-     .WL("public int SomeMethod(int value) {").Indent()
-     .WL("return value * 2;")
-     .Outdent().WL("}")
-     .Outdent().WL("}");
-
-    Console.WriteLine(w.AsString());
-}
-```
-```con
-class ClassName
-{
-    public int SomeValue { get; set; }
-
-    public int SomeMethod(int value) {
-        return value * 2;
-    }
-}
-```
-Sample Html writing:
-```csharp
-void WriterHtmlSample() {
-    var w = new IndentTextWriter();
-    w.HtmlTag("div", "class='some-class'", c =>
-        c.HtmlLineTag("p", "Some paragraph text")
-         .HtmlTag("div", c => c.WL("Inner text"))
-    );
-    Console.WriteLine(w.AsString());
-}
-```
-```html
-<div class='some-class'>
-    <p>Some paragraph text</p>
-    <div>
-        Inner text
-    </div>
-</div>
-```
-<a id="id-fex"></a>
-## Flow Expression
+## Flow Expressions
 Powerful and novel mechanism for building inline Parsers and other logical flow expressions.
 Flow Expressions are fully described in a separate repo [flow-expressions](https://github.com/PromicSW/flow-expressions)
 

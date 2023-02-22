@@ -101,11 +101,19 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Return current Token Trimmed
+        /// Return current token trimmed
         /// </summary>
         public string TrimToken => Token.Trim();
 
-        public string TokenStripComments => ScriptScanner.StripComments(Token);
+        /// <summary>
+        /// Return current token stripped of comments
+        /// </summary>
+        public string StripToken => ScriptScanner.StripComments(Token);
+
+        /// <summary>
+        /// Return current token trimmed and stripped of comments
+        /// </summary>
+        public string TrimStripToken => ScriptScanner.StripComments(TrimToken);
 
         // Source Management ==================================================
 
