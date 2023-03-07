@@ -164,8 +164,8 @@ namespace Psw.Scanners
         /// Scan a List of the form: ( item1, item 2, ...)<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
         /// - Item type 1: All text up to next closing delim or separator (logged trimmed)
-        /// - Item type 2: A string literal - may NOT span a line! (logged verbatim)
-        /// - Item type 3: Block delimited text (logged verbatim) - use for multi-line text. 
+        /// - Item type 2: A string literal - may NOT span a line! (logged verbatim excluding string delimiters)
+        /// - Item type 3: Block delimited text (logged verbatim excluding block delimiters) - use for multi-line text. 
         /// - Blank items are not recorded.
         /// </summary>
         /// <param name="delims">Opening and closing list delimiter (default = "()") </param>
@@ -260,8 +260,8 @@ namespace Psw.Scanners
         /// Scan a List of the form: ( item1, item 2 ... )<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
         /// - Item type 1: All text up to next closing delim or separator (logged trimmed)
-        /// - Item type 2: A string literal - may NOT span a line! (logged verbatim)
-        /// - Item type 3: Block delimited text (logged verbatim) - use for multi-line text. 
+        /// - Item type 2: A string literal - may NOT span a line! (logged verbatim  excluding string delimiters)
+        /// - Item type 3: Block delimited text (logged verbatim excluding block delimiters) - use for multi-line text. 
         /// - Blank items are not recorded.
         /// </summary>
         /// <param name="delims">Opening and closing list delimiter (default = "()") </param>
