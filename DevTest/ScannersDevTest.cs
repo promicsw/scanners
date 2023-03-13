@@ -24,9 +24,7 @@ var list2 = @"(one,
                two,
                three,
                'literal , )',
-               [
-block
-])";
+               [block])";
 
 var list3 = @"{Basic Html and 'controls'
                |>@LabelItem('Forms:', 'Vertical, Horizontal, Inline and advanced layouts')
