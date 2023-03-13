@@ -1,10 +1,8 @@
 ﻿// -----------------------------------------------------------------------------
-// Copyright (c) Promic Software. All rights reserved.
+// Copyright (c) 2023 Promic Software. All rights reserved.
 // Licensed under the MIT License (MIT).
 // -----------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Psw.Scanners
@@ -66,7 +64,7 @@ namespace Psw.Scanners
         /// <param name="ln">Line number in script segment</param>
         /// <param name="col">Column number in script segment</param>
         /// <returns>False always - so it can return false from caller (if required)</returns>
-        public bool LogError(string errMsg, string errContext = "Parse error", string? scriptSegment = null, int ln = 1, int col = 1) {
+        public bool LogError(string errMsg, string errContext = "Parse error", string scriptSegment = null, int ln = 1, int col = 1) {
             (IsError, ErrorMessage, ErrorContext, ScriptSegment, Ln, Col, ErrorFile) = (true, errMsg, errContext, scriptSegment, ln, col, FileName);
             return false;
         }

@@ -1,9 +1,8 @@
 ﻿// -----------------------------------------------------------------------------
-// Copyright (c) Promic Software. All rights reserved.
+// Copyright (c) 2023 Promic Software. All rights reserved.
 // Licensed under the MIT License (MIT).
 // -----------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -172,7 +171,7 @@ namespace Psw.Scanners
         /// <param name="separator">List item separator (default = ,)</param>
         /// <param name="block">Opening and closing Block delimiters (default = "[]")</param>
         /// <returns>List of strings else null and error logged in ErrorLog</returns>
-        public List<string>? ScanList(string delims = "()", char separator = ',', string block = "[]") {
+        public List<string> ScanList(string delims = "()", char separator = ',', string block = "[]") {
 
             if (!ValidBlockDelims(delims)) {
                 LogError($"Invalid delimiters \"{delims}\" defined in call to ScanList", "Scan List");
@@ -211,50 +210,6 @@ namespace Psw.Scanners
             return list;
 
         }
-
-        /*
-        public List<string>? ScanList(string delims = "()", char separator = ',', string block = "[]") {
-
-            if (!ValidBlockDelims(delims)) {
-                LogError($"Invalid delimiters \"{delims}\" defined in call to ScanList", "Scan List");
-                return null;
-            }
-
-            var list = new List<string>();
-            char cOpen = delims[0], cClose = delims[1];
-            bool checkBlock = ValidBlockDelims(block);
-
-            SkipWSC();
-            if (!IsCh(cOpen)) { LogError($"{cOpen} expected", "ScanList"); return null; }
-
-            while (!IsEos) {
-                SkipWS();
-                if (IsCh(cClose)) break;       // Done
-                if (IsCh(separator)) continue; // Absorb separator
-
-                if (checkBlock && IsPeekCh(block[0])) {
-                    if (ScanBlock(block)) list.Add(TrimToken); 
-                    //LogError($"Error scanning block {block}", "ScanList"); Use ScanBlock error
-                    else return null;
-                }
-                else if (IsStringDelim()) {
-                    if (StrLit()) list.Add(Token);
-                    //LogError("Unterminated string literal", "Scan List"); Use StrLit error message
-                    else return null;
-                }
-                else if (ScanToAny(_nl + separator + cClose)) {
-                    list.Add(TrimToken);
-                }
-                else {
-                    LogError($"{cClose} or {separator} expected", "ScanList");
-                    return null;
-                }
-            }
-            
-            return list;
-
-        }
-        */
 
         /// <summary>
         /// Scan a List of the form: ( item1, item 2 ... )<br/>

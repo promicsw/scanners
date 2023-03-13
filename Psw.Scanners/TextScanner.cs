@@ -1,16 +1,10 @@
 ﻿// -----------------------------------------------------------------------------
-// Copyright (c) Promic Software. All rights reserved.
+// Copyright (c) 2023 Promic Software. All rights reserved.
 // Licensed under the MIT License (MIT).
 // -----------------------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Psw.Scanners
 {

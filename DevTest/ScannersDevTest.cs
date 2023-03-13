@@ -6,12 +6,16 @@ ScanSample();
 // Block samples: -----------------------------------------
 var block1 = "{body it's /* comment } */ {nested} ` } `}";
 
-var block2 = @"{|Basic Html and 'controls'
+var block2 = @"{ // Should retain newlines
+    body it's /* comment } */ {nested} ` } `
+}";
+
+var block3 = @"{|Basic Html and 'controls'
                 |>@LabelItem('Forms:', 'Vertical, Horizontal, Inline and advanced layouts')
                 |NavBar, Menus, Tab and Grid layouts, Cards, Svg etc.
                 |A whole new way... <b>it's a game changer :)</b> }";
 
-//TestScanBlock(block1);
+TestScanBlock(block1);
 
 // List samples: ------------------------------------------
 var list1 = "( one, two, ,three, 'Literal text' , after, [Block with comma , and )] [block 2], [block 3] )";
@@ -20,7 +24,9 @@ var list2 = @"(one,
                two,
                three,
                'literal , )',
-               [block])";
+               [
+block
+])";
 
 var list3 = @"{Basic Html and 'controls'
                |>@LabelItem('Forms:', 'Vertical, Horizontal, Inline and advanced layouts')
@@ -32,7 +38,7 @@ var list4 = @"([Basic Html and 'controls'
                 |NavBar, Menus, Tab and Grid layouts, Cards, Svg etc.
                 |A whole new way... <b>it's a game changer :)</b>])";
 
-//TestScanList(list1);
+TestScanList(list2);
 //TestScanList(list3, "{}", '|');  // list3 needs different delimiters and separator
 
 // Scanner sample
