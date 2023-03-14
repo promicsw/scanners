@@ -4,6 +4,18 @@
 	<TargetFramework>net6.0</TargetFramework>  
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Title>Scanners</Title>
+    <Authors>Andre Pretorius</Authors>
+    <Company>Promic Software</Company>
+    <Description>A set of high performance Scanners for low-level text/script parsing.</Description>
+    <Copyright>2023 Promic Software</Copyright>
+    <PackageProjectUrl>https://github.com/promicsw/scanners</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/promicsw/scanners</RepositoryUrl>
+    <PackageTags>scanner;parsing;</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>Nuget.md</PackageReadmeFile>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

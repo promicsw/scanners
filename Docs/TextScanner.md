@@ -17,14 +17,13 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 > - *Eos:* End of Source (or string)
 > - *Eol:* End of Line
 
-
 |Member|Description|
 |----|------|
 |`P: char Delim`|Get last delimiter logged (when applicable)<br/>|
 |`P: string Match`|Get the matching string for the last IsAnyString or SkipToAnyStr method call.<br/>|
 |`P: ScanErrorLog ErrorLog`|Get/Set the bound ScanErroLog<br/>|
 |**Constructor:**||
-|`M: TextScanner ErrorLog(string source, ScanErrorLog errorLog = null)`|Create a TextScanner with given source string and optional 'external' ScanErrorLog (else an internal one is created)<br/>|
+|`C: TextScanner(string source, ScanErrorLog errorLog = null)`|Create a TextScanner with given source string and optional 'external' ScanErrorLog (else an internal one is created)<br/>|
 |**Token operations:**||
 |`P: bool IsToken`|Query if a Token currently exists<br/>|
 |`P: string StripToken`|Return current token stripped of comments<br/>|
@@ -93,3 +92,4 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 |`M: string GetUptoLine(int pos = -1, int lastNoofLines = 0)`|Get all text up to and including the line containing pos (excluding NL)<br/>- Optionally only get the lastNoofLines if > 0<br/><br/>**Parameters:**<br/><code>pos:</code> Position or -1 for current position<br/>|
 |`M: bool LogError(string errorMsg, string errorContext = "Parse error", int errIndex = -1)`|Log an Error (see ScanErrorLog) with given erroMsg and errorContext:<br/>- At current Index position (default errIndex = -1) or at given errIndex ( >= 0 )<br/>- Records the last 10 lines and Line and Column no in ErrorLog - for later display<br/><br/>**Returns:**<br/>False always - so can use to return false from caller<br/>|
 |`M: bool IsError()`|Return Error status<br/>|
+

@@ -58,7 +58,8 @@ Sample Error
 Parse error: { expected
 ```
 
-### As a *teaser*, the above parsing can be implemented using [Flow Expressions](#id-fex)
+### FYI: the above parsing can be implemented using [Flow Expressions](https://github.com/PromicSW/flow-expressions)
+Flow Expressions are a powerful and novel mechanism for building complex inline Parsers and other logical flow systems.
 ```csharp
 void FexScanSample() {
     var fex = new FexParser(" FuncName (prm1, 'prm2') { sample body }");
@@ -75,11 +76,6 @@ void FexScanSample() {
     Console.WriteLine(fex.Run(funcParse, () => $"Result: {funcName}({string.Join(',', prm)}) {{{body}}}", e => e.AsConsoleError("Error")));
 }
 ```
-
-
-## Flow Expressions
-Powerful and novel mechanism for building inline Parsers and other logical flow expressions.
-Flow Expressions are fully described in a separate repo [flow-expressions](https://github.com/PromicSW/flow-expressions)
 
 The following example is a complete **Expression Parser**, including evaluation and error reporting:
 
