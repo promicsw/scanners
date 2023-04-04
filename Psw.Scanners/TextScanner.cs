@@ -71,12 +71,12 @@ namespace Psw.Scanners
 
         /// <sgroup>Token operations</sgroup>
         /// <summary>
-        /// Query if a Token currently exists
+        /// Check if a Token currently exists
         /// </summary>
         public bool IsToken => _tokenEndIndex > _tokenStartIndex;
 
         /// <summary>
-        /// Returns the current Token else string.Empty for none
+        /// Get the current Token else string.Empty for none
         /// </summary>
         public string Token => IsToken ? Source[_tokenStartIndex.._tokenEndIndex] : string.Empty;
 
@@ -95,17 +95,17 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Return current token trimmed
+        /// Get current token Trimmed
         /// </summary>
         public string TrimToken => Token.Trim();
 
         /// <summary>
-        /// Return current token stripped of comments
+        /// Get current token stripped of comments
         /// </summary>
         public string StripToken => ScriptScanner.StripComments(Token);
 
         /// <summary>
-        /// Return current token trimmed and stripped of comments
+        /// Get current token trimmed and stripped of comments
         /// </summary>
         public string TrimStripToken => ScriptScanner.StripComments(TrimToken);
 
@@ -186,7 +186,7 @@ namespace Psw.Scanners
 
         /// <sgroup>Core Utilities</sgroup>
         /// <summary>
-        /// Query if Index is at End of Source
+        /// Check if Index is at End of Source
         /// </summary>
         public bool IsEos { get; private set; }
 
@@ -196,7 +196,7 @@ namespace Psw.Scanners
         public void ToEos() => Index = -1;
 
         /// <summary>
-        /// Query if Index is at End of Line
+        /// Check if Index is at End of Line
         /// </summary>
         public bool IsEol => _Current == _nl[0];
 
@@ -206,7 +206,7 @@ namespace Psw.Scanners
         public bool IsEosOrEol => IsEos || IsEol;
 
         /// <summary>
-        /// Returns character at Index and increments Index, or '0' for Eos.
+        /// Get character at Index and increments Index, or '0' for Eos.
         /// </summary>
         public char NextCh() {
             char c = _Current;
@@ -215,12 +215,12 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Returns character at Index (without advancing), or '0' for Eos.
+        /// Get character at Index (index unchanged), or '0' for Eos.
         /// </summary>
         public char PeekCh() => _Current;
 
         /// <summary>
-        /// Returns character at relative offset to Index (without changing Index), or '0' Eos if out of range
+        /// Get character at relative offset to Index (index unchanged), or '0' Eos if out of range
         /// </summary>
         public char PeekNextCh(int offset = 1) {
             var peekIndex = _index + offset;
@@ -228,7 +228,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Returns true (and advances Index) if the character at Index matches c else false and Index unchanged.
+        /// Check if the character at Index matches c and advance Index if true.
         /// </summary>
         public bool IsCh(char c) {
             if (!IsPeekCh(c)) return false;
@@ -237,7 +237,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Returns count of consecutive matching characters and advances Index
+        /// Get count of consecutive matching characters and advances Index
         /// </summary>
         public int CountCh(char c) {
             int count = 0;
@@ -246,7 +246,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Query if character at Index is in chars
+        /// Check if character at Index is one of the chars
         /// </summary>
         /// <returns>
         /// True: if found, advances the Index and logs the char in Delim<br/>
@@ -260,27 +260,27 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Returns true if character at Index (without advancing) matches c else false
+        /// Check if character at Index matches c (index unchanged).
         /// </summary>
         public bool IsPeekCh(char c) => _Current == c;
 
         /// <summary>
-        /// Returns true if character at Index (without advancing) is in chars else false
+        /// Check if character at Index is one of the chars (index unchanged).
         /// </summary>
         public bool IsPeekAnyCh(string chars) => chars.Contains(_Current);
 
         /// <summary>
-        /// Return true if character at Index + offset (without advancing) matches c else false
+        /// Check if character at Index + offset matches c (index unchanged).
         /// </summary>
         public bool IsPeekNextCh(char c, int offset) => PeekNextCh(offset) == c;
 
         /// <summary>
-        /// Returns true if character at Index + offset (without advancing) is in chars else false
+        /// Check character at Index + offset is one of the chars (index unchanged).
         /// </summary>
         public bool IsPeekNextAnyCh(string chars, int offset) => chars.Contains(PeekNextCh(offset));
 
         /// <summary>
-        /// Check if text at Index equals matchString and optionally advance Index if it matches.
+        /// Check if text at Index equals matchString and optionally advance the Index if it matches.
         /// </summary>
         /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
         public bool IsString(string matchString, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
@@ -298,7 +298,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Check if text at Index equals any string in matchStrings and optionally advance Index if it matches.<br/>
+        /// Check if text at Index equals any string in matchStrings and optionally advance the Index if it matches.<br/>
         /// - Match contains the matching string.
         /// </summary>
         /// <param name="matchStrings">Enumerable set of strings</param>
@@ -318,7 +318,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Check if text at Index equals any string in delimited matchStrings and optionally advance Index if it matches.<br/>
+        /// Check if text at Index equals any string in delimited matchStrings and optionally advance the Index if it matches.<br/>
         /// - Match contains the matching string.
         /// </summary>
         /// <param name="matchStrings">Delimited strings and first character must be the delimiter (e.g. "|s1|s2|...")</param>

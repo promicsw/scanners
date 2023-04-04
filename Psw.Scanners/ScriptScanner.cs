@@ -87,7 +87,7 @@ namespace Psw.Scanners
         private static bool ValidBlockDelims(string delims) => delims != null && delims.Length > 1;
 
         /// <summary>
-        /// Scan a block delimited by blockDelims E.g "{}" or "()" or "[]" etc.<br /> 
+        /// Scan a block delimited by blockDelims (E.g "{}" or "()" or "[]" etc.)<br /> 
         /// - Handles Nesting and ignores any block delimiters inside comments or string literals (delimited by StringDelim)<br/>
         /// - Token contains the block content excluding the block delimiters.
         /// </summary>
@@ -140,6 +140,25 @@ namespace Psw.Scanners
         }
 
         /// <summary>
+        /// Scan a block delimited by blockStart and blockEnd strings (E.g "[%" and "%]" etc.)<br /> 
+        /// - Index must currently be at blockStart<br/>
+        /// - The first occurrence of blockEnd terminates the scan<br/>
+        /// - Token contains the block content excluding the block delimiters.
+        /// </summary>
+        /// <returns>True for a valid block (Index positioned after block) else false and Logs an error (Index unchanged)</returns>
+        public bool ScanRawBlock(string blockStart,  string blockEnd) {
+            int startIndex = Index;
+            if (string.IsNullOrEmpty(blockStart) || string.IsNullOrEmpty(blockEnd) || !IsString(blockStart)) return false;
+            if (ScanToStr(blockEnd)) {
+                Index += blockEnd.Length;
+                return true;
+            }
+
+            Index = startIndex;  // Failed: Restore Position
+            return LogError($"Invalid RawBlock {blockStart}...{blockEnd} - matching closing '{blockEnd}' not found", "Scan RawBlock");
+        }
+
+        /// <summary>
         /// Static method: Return the source string with all line and block comments removed.
         /// </summary>
         public static string StripComments(string source) {
@@ -162,7 +181,7 @@ namespace Psw.Scanners
         /// <summary>
         /// Scan a List of the form: ( item1, item 2, ...)<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
-        /// - Item type 1: All text up to next closing delim or separator (logged trimmed)
+        /// - Item type 1: All text up to closing delimiter or separator (logged trimmed)
         /// - Item type 2: A string literal - may NOT span a line! (logged verbatim excluding string delimiters)
         /// - Item type 3: Block delimited text (logged verbatim excluding block delimiters) - use for multi-line text. 
         /// - Blank items are not recorded.
@@ -214,7 +233,7 @@ namespace Psw.Scanners
         /// <summary>
         /// Scan a List of the form: ( item1, item 2 ... )<br/>
         /// - Note: The next non-whitespace character must be the Opening list delimiter.<br/>
-        /// - Item type 1: All text up to next closing delim or separator (logged trimmed)
+        /// - Item type 1: All text up to closing delimiter or separator (logged trimmed)
         /// - Item type 2: A string literal - may NOT span a line! (logged verbatim  excluding string delimiters)
         /// - Item type 3: Block delimited text (logged verbatim excluding block delimiters) - use for multi-line text. 
         /// - Blank items are not recorded.

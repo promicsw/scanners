@@ -46,7 +46,7 @@ Result: FuncName(prm1,prm2) {sample body}
 Or for an Error: 
 Sample Error
  FuncName (prm1, 'prm2')  sample body }
---------------------------^ (ln:1 Ch:27)
+--------------------------^ (Ln:1 Ch:27)
 Parse error: { expected
 ```
 

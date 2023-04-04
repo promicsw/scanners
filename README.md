@@ -54,7 +54,7 @@ Result: FuncName(prm1,prm2) {sample body}
 Or for an Error: 
 Sample Error
  FuncName (prm1, 'prm2')  sample body }
---------------------------^ (ln:1 Ch:27)
+--------------------------^ (Ln:1 Ch:27)
 Parse error: { expected
 ```
 
@@ -77,57 +77,4 @@ void FexScanSample() {
 }
 ```
 
-The following example is a complete **Expression Parser**, including evaluation and error reporting:
 
-```csharp
-public static void ExpressionEval() {
-    /*
-     * Expression Grammar:
-     * expression     => factor ( ( '-' | '+' ) factor )* ;
-     * factor         => unary ( ( '/' | '*' ) unary )* ;
-     * unary          => ( '-' ) unary | primary ;
-     * primary        => NUMBER | "(" expression ")" ;
-    */
-
-    // Number Stack for calculations
-    Stack<double> numStack = new Stack<double>();
-
-    var expr1 = "9 - (5.5 + 3) * 6 - 4 / ( 9 - 1 )";
-
-    Console.WriteLine($"Evaluating expression: {expr1}");
-
-    var fex = new FexParser(expr1);
-
-    var expr = fex.Seq(s => s
-        .Ref("factor")
-        .RepOneOf(0, -1, r => r
-            .Seq(s => s.Ch('+').Ref("factor").Act(c => numStack.Push(numStack.Pop() + numStack.Pop())))
-            .Seq(s => s.Ch('-').Ref("factor").Act(c => numStack.Push(-numStack.Pop() + numStack.Pop())))
-         ));
-
-    var factor = fex.Seq(s => s.RefName("factor")
-        .Ref("unary")
-        .RepOneOf(0, -1, r => r
-            .Seq(s => s.Ch('*').Ref("unary").Act(c => numStack.Push(numStack.Pop() * numStack.Pop())))
-            .Seq(s => s.Ch('/').Ref("unary")
-                       .Op(c => numStack.Peek() != 0).OnFail("Division by 0") // Trap division by 0
-                       .Act(c => numStack.Push(1/numStack.Pop() * numStack.Pop())))
-         ));
-
-    var unary = fex.Seq(s => s.RefName("unary")
-        .OneOf(o => o
-            .Seq(s => s.Ch('-').Ref("unary").Act(a => numStack.Push(-numStack.Pop())))
-            .Ref("primary")
-         ).OnFail("Primary expected"));
-
-    var primary = fex.Seq(s => s.RefName("primary")
-        .OneOf(o => o
-            .Seq(e => e.Ch('(').Fex(expr).Ch(')').OnFail(") expected"))
-            .Seq(s => s.NumDecimal(n => numStack.Push(n)))
-         ));
-
-    var exprEval = fex.Seq(s => s.GlobalPreOp(c => c.SkipSp()).Fex(expr).IsEos().OnFail("invalid expression"));
-
-    Console.WriteLine(fex.Run(exprEval, () => $"Passed = {numStack.Pop():F4}", e => e.AsConsoleError("Expression Error:")));
-}
-```

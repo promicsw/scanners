@@ -12,11 +12,12 @@
     <Copyright>2023 Promic Software</Copyright>
     <PackageProjectUrl>https://github.com/promicsw/scanners</PackageProjectUrl>
     <RepositoryUrl>https://github.com/promicsw/scanners</RepositoryUrl>
-    <PackageTags>scanner;parsing;</PackageTags>
+    <PackageTags>scanner;lexer;parsing;c#;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>Nuget.md</PackageReadmeFile>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

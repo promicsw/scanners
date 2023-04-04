@@ -17,7 +17,7 @@ namespace Psw.Scanners
     /// <code lang="con">
     /// Sample Error                              // Error Heading 
     ///  FuncName(prm1, 'prm2')  sample body }    // ScriptSegment
-    /// -------------------------^(ln: 1 Ch: 26)  // Error position in segment
+    /// -------------------------^(Ln: 1 Ch: 26)  // Error position in segment
     /// Filename: C:\somefilename.txt             // Error File name (if defined)
     /// Parse error: { expected                   // Error Context : Error Message
     /// </code>
@@ -80,7 +80,7 @@ namespace Psw.Scanners
                 sb.AppendLine($"<span class='se-code'>{ScriptSegment}</span>");
             }
 
-            sb.AppendLine($"<span class='se-pos'>{new string('-', Col - 1)}^ (ln:{Ln} Ch:{Col})</span>");
+            sb.AppendLine($"<span class='se-pos'>{new string('-', Col - 1)}^ (Ln:{Ln} Ch:{Col})</span>");
             if (!string.IsNullOrEmpty(ErrorFile)) sb.AppendLine($"<span class='se-pos'>Filename: {ErrorFile}</span>");
             sb.AppendLine($"<span class='se-msg'>{ErrorContext}: {ErrorMessage}</span>");
             return sb.ToString();
@@ -97,7 +97,7 @@ namespace Psw.Scanners
                 sb.AppendLine(ScriptSegment);
             }
 
-            sb.AppendLine($"{new string('-', Col - 1)}^ (ln:{Ln} Ch:{Col})");
+            sb.AppendLine($"{new string('-', Col - 1)}^ (Ln:{Ln} Ch:{Col})");
             if (!string.IsNullOrEmpty(ErrorFile)) sb.AppendLine($"Filename: {ErrorFile}");
             sb.AppendLine($"{ErrorContext}: {ErrorMessage}");
             return sb.ToString();
@@ -121,7 +121,7 @@ namespace Psw.Scanners
             WriteLn(cheading, heading);
             if (IsError) {
                 if (!string.IsNullOrWhiteSpace(ScriptSegment)) WriteLn(cscript, ScriptSegment);
-                WriteLn(cpos, $"{new string('-', Col - 1)}^ (ln:{Ln} Ch:{Col})");
+                WriteLn(cpos, $"{new string('-', Col - 1)}^ (Ln:{Ln} Ch:{Col})");
                 if (!string.IsNullOrEmpty(ErrorFile)) WriteLn(cpos, $"Filename: {ErrorFile}");
                 WriteLn(cerror, $"{ErrorContext}: {ErrorMessage}");
             }

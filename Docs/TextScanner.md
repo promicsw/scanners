@@ -25,11 +25,11 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 |**Constructor:**||
 |`C: TextScanner(string source, ScanErrorLog errorLog = null)`|Create a TextScanner with given source string and optional 'external' ScanErrorLog (else an internal one is created)<br/>|
 |**Token operations:**||
-|`P: bool IsToken`|Query if a Token currently exists<br/>|
-|`P: string StripToken`|Return current token stripped of comments<br/>|
-|`P: string Token`|Returns the current Token else string.Empty for none<br/>|
-|`P: string TrimStripToken`|Return current token trimmed and stripped of comments<br/>|
-|`P: string TrimToken`|Return current token trimmed<br/>|
+|`P: bool IsToken`|Check if a Token currently exists<br/>|
+|`P: string StripToken`|Get current token stripped of comments<br/>|
+|`P: string Token`|Get the current Token else string.Empty for none<br/>|
+|`P: string TrimStripToken`|Get current token trimmed and stripped of comments<br/>|
+|`P: string TrimToken`|Get current token Trimmed<br/>|
 |`M: bool ValidToken()`|Check if the current Token is not null or WhiteSpace<br/>|
 |**Source Management:**||
 |`M: void Insert(string text)`|Insert text at the current Index, and continue scanning from there<br/>|
@@ -39,22 +39,22 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 |**Index Management:**||
 |`P: int Index`|Get: current scan index <br/>Set: scan index (0 = start, &lt; 0 or &gt; length = end, else intermediate)<br/>|
 |**Core Utilities:**||
-|`M: int CountCh(char c)`|Returns count of consecutive matching characters and advances Index<br/>|
-|`M: bool IsAnyCh(string chars)`|Query if character at Index is in chars<br/><br/>**Returns:**<br/>True: if found, advances the Index and logs the char in Delim<br/>False: if not found and Index is unchanged<br/>|
-|`M: bool IsAnyString(IEnumerable<string> matchStrings, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals any string in matchStrings and optionally advance Index if it matches.<br/>- Match contains the matching string.<br/><br/>**Parameters:**<br/><code>matchStrings:</code> Enumerable set of strings<br/><code>advanceIndex:</code> Advance Index to just after match (default) else not<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
-|`M: bool IsAnyString(string matchStrings, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals any string in delimited matchStrings and optionally advance Index if it matches.<br/>- Match contains the matching string.<br/><br/>**Parameters:**<br/><code>matchStrings:</code> Delimited strings and first character must be the delimiter (e.g. "\|s1\|s2\|...")<br/><code>advanceIndex:</code> Advance Index to just after match (default) else not<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
-|`M: bool IsCh(char c)`|Returns true (and advances Index) if the character at Index matches c else false and Index unchanged.<br/>|
-|`P: bool IsEol`|Query if Index is at End of Line<br/>|
-|`P: bool IsEos`|Query if Index is at End of Source<br/>|
+|`M: int CountCh(char c)`|Get count of consecutive matching characters and advances Index<br/>|
+|`M: bool IsAnyCh(string chars)`|Check if character at Index is one of the chars<br/><br/>**Returns:**<br/>True: if found, advances the Index and logs the char in Delim<br/>False: if not found and Index is unchanged<br/>|
+|`M: bool IsAnyString(IEnumerable<string> matchStrings, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals any string in matchStrings and optionally advance the Index if it matches.<br/>- Match contains the matching string.<br/><br/>**Parameters:**<br/><code>matchStrings:</code> Enumerable set of strings<br/><code>advanceIndex:</code> Advance Index to just after match (default) else not<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
+|`M: bool IsAnyString(string matchStrings, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals any string in delimited matchStrings and optionally advance the Index if it matches.<br/>- Match contains the matching string.<br/><br/>**Parameters:**<br/><code>matchStrings:</code> Delimited strings and first character must be the delimiter (e.g. "\|s1\|s2\|...")<br/><code>advanceIndex:</code> Advance Index to just after match (default) else not<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
+|`M: bool IsCh(char c)`|Check if the character at Index matches c and advance Index if true.<br/>|
+|`P: bool IsEol`|Check if Index is at End of Line<br/>|
+|`P: bool IsEos`|Check if Index is at End of Source<br/>|
 |`P: bool IsEosOrEol`|Query if Index is at Eos or Eol<br/>|
-|`M: bool IsPeekAnyCh(string chars)`|Returns true if character at Index (without advancing) is in chars else false<br/>|
-|`M: bool IsPeekCh(char c)`|Returns true if character at Index (without advancing) matches c else false<br/>|
-|`M: bool IsPeekNextAnyCh(string chars, int offset)`|Returns true if character at Index + offset (without advancing) is in chars else false<br/>|
-|`M: bool IsPeekNextCh(char c, int offset)`|Return true if character at Index + offset (without advancing) matches c else false<br/>|
-|`M: bool IsString(string matchString, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals matchString and optionally advance Index if it matches.<br/><br/>**Parameters:**<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
-|`M: char NextCh()`|Returns character at Index and increments Index, or '0' for Eos.<br/>|
-|`M: char PeekCh()`|Returns character at Index (without advancing), or '0' for Eos.<br/>|
-|`M: char PeekNextCh(int offset = 1)`|Returns character at relative offset to Index (without changing Index), or '0' Eos if out of range<br/>|
+|`M: bool IsPeekAnyCh(string chars)`|Check if character at Index is one of the chars (index unchanged).<br/>|
+|`M: bool IsPeekCh(char c)`|Check if character at Index matches c (index unchanged).<br/>|
+|`M: bool IsPeekNextAnyCh(string chars, int offset)`|Check character at Index + offset is one of the chars (index unchanged).<br/>|
+|`M: bool IsPeekNextCh(char c, int offset)`|Check if character at Index + offset matches c (index unchanged).<br/>|
+|`M: bool IsString(string matchString, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals matchString and optionally advance the Index if it matches.<br/><br/>**Parameters:**<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
+|`M: char NextCh()`|Get character at Index and increments Index, or '0' for Eos.<br/>|
+|`M: char PeekCh()`|Get character at Index (index unchanged), or '0' for Eos.<br/>|
+|`M: char PeekNextCh(int offset = 1)`|Get character at relative offset to Index (index unchanged), or '0' Eos if out of range<br/>|
 |`M: void ToEos()`|Advance Index to Eos<br/>|
 |**Skipping Operations:**||
 |`M: bool Skip(char skipChar)`|Skip while character is skipChar<br/><br/>**Returns:**<br/>True if not Eos after skipping else false<br/>|

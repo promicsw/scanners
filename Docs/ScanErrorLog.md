@@ -9,7 +9,7 @@ Error output has the following basic form:
 ```con
 Sample Error                              // Error Heading 
  FuncName(prm1, 'prm2')  sample body }    // ScriptSegment
--------------------------^(ln: 1 Ch: 26)  // Error position in segment
+-------------------------^(Ln: 1 Ch: 26)  // Error position in segment
 Filename: C:\somefilename.txt             // Error File name (if defined)
 Parse error: { expected                   // Error Context : Error Message
 ```
