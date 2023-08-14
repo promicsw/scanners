@@ -22,7 +22,7 @@ Line 1
 Line 2
 ```";
 
-TestScanRawBlock(rawBlock, "```", "```");
+//TestScanRawBlock(rawBlock, "```", "```");
 
 // List samples: ------------------------------------------
 var list1 = "( one, two, ,three, 'Literal text' , after, [Block with comma , and )] [block 2], [block 3] )";
@@ -95,19 +95,19 @@ void TestScanBlock(string block) {
 }
 
 // RowBlock scanning tests
-void TestScanRawBlock(string block, string blockStart, string blockEnd) {
-    var scn = new ScriptScanner();
+//void TestScanRawBlock(string block, string blockStart, string blockEnd) {
+//    var scn = new ScriptScanner();
 
-    WriteLine($"Test ScanRawBlock: <{block}>");
-    scn.SetSource(block);
+//    WriteLine($"Test ScanRawBlock: <{block}>");
+//    scn.SetSource(block);
 
-    if (scn.ScanRawBlock(blockStart, blockEnd)) {
-        WriteLine("Result: Pass");
-        WriteLine($"Token: <{scn.Token}>");
-        //WriteLine($"StripComments: <{scn.StripToken}>");
-    }
-    else WriteLine(scn.ErrorLog.AsConsoleError("ScanRawBlock Error:"));
-}
+//    if (scn.ScanRawBlock(blockStart, blockEnd)) {
+//        WriteLine("Result: Pass");
+//        WriteLine($"Token: <{scn.Token}>");
+//        //WriteLine($"StripComments: <{scn.StripToken}>");
+//    }
+//    else WriteLine(scn.ErrorLog.AsConsoleError("ScanRawBlock Error:"));
+//}
 
 // List scanning tests
 void TestScanList(string lst, string delims = "()", char sep = ',') {

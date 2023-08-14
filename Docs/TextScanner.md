@@ -47,14 +47,11 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 |`P: bool IsEol`|Check if Index is at End of Line<br/>|
 |`P: bool IsEos`|Check if Index is at End of Source<br/>|
 |`P: bool IsEosOrEol`|Query if Index is at Eos or Eol<br/>|
-|`M: bool IsPeekAnyCh(string chars)`|Check if character at Index is one of the chars (index unchanged).<br/>|
-|`M: bool IsPeekCh(char c)`|Check if character at Index matches c (index unchanged).<br/>|
-|`M: bool IsPeekNextAnyCh(string chars, int offset)`|Check character at Index + offset is one of the chars (index unchanged).<br/>|
-|`M: bool IsPeekNextCh(char c, int offset)`|Check if character at Index + offset matches c (index unchanged).<br/>|
+|`M: bool IsPeekAnyCh(string chars, int offset = 0)`|Check if character at relative offset to Index matches any one of the chars (index unchanged).<br/>|
+|`M: bool IsPeekCh(char c, int offset = 0)`|Check if character at relative offset to Index matches c (index unchanged).<br/>|
 |`M: bool IsString(string matchString, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase)`|Check if text at Index equals matchString and optionally advance the Index if it matches.<br/><br/>**Parameters:**<br/><code>comp:</code> Comparison type (default = StringComparison.InvariantCultureIgnoreCase)<br/>|
 |`M: char NextCh()`|Get character at Index and increments Index, or '0' for Eos.<br/>|
-|`M: char PeekCh()`|Get character at Index (index unchanged), or '0' for Eos.<br/>|
-|`M: char PeekNextCh(int offset = 1)`|Get character at relative offset to Index (index unchanged), or '0' Eos if out of range<br/>|
+|`M: char PeekCh(int offset = 0)`|Get character at relative offset to Index (index unchanged).<br/><br/>**Returns:**<br/>Character or Eos ('0') if out of range.<br/>|
 |`M: void ToEos()`|Advance Index to Eos<br/>|
 |**Skipping Operations:**||
 |`M: bool Skip(char skipChar)`|Skip while character is skipChar<br/><br/>**Returns:**<br/>True if not Eos after skipping else false<br/>|
