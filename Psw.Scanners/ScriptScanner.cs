@@ -268,7 +268,7 @@ namespace Psw.Scanners
         /// <summary>
         /// Query if Index is currently at a comment
         /// </summary>
-        public bool IsComment() => _Current == '/' && "/*".Contains(PeekNextCh(1));
+        public bool IsComment() => _Current == '/' && "/*".Contains(PeekCh(1));
 
         /// <summary>
         /// Skip continuous sequence of comments:<br/> 
@@ -284,7 +284,7 @@ namespace Psw.Scanners
             bool isComment = commentConfirmed || IsComment();
 
             while (isComment) {
-                if ('/' == PeekNextCh(1)) { // Line comment
+                if ('/' == PeekCh(1)) { // Line comment
                     SkipToEol(!termNL);
                     if (termNL) return !IsEos;
                 }

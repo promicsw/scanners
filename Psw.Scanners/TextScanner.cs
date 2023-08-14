@@ -215,34 +215,12 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Get character at Index (index unchanged), or '0' for Eos.
-        /// </summary>
-        public char PeekCh() => _Current;
-
-        /// <summary>
-        /// Get character at relative offset to Index (index unchanged), or '0' Eos if out of range
-        /// </summary>
-        public char PeekNextCh(int offset = 1) {
-            var peekIndex = _index + offset;
-            return peekIndex >= _length || peekIndex < 0 ? _Eos : Source[peekIndex];
-        }
-
-        /// <summary>
         /// Check if the character at Index matches c and advance Index if true.
         /// </summary>
         public bool IsCh(char c) {
             if (!IsPeekCh(c)) return false;
             Advance();
             return true;
-        }
-
-        /// <summary>
-        /// Get count of consecutive matching characters and advances Index
-        /// </summary>
-        public int CountCh(char c) {
-            int count = 0;
-            while (IsCh(c)) count++;
-            return count;
         }
 
         /// <summary>
@@ -260,24 +238,67 @@ namespace Psw.Scanners
         }
 
         /// <summary>
+        /// Get count of consecutive matching characters and advances Index
+        /// </summary>
+        public int CountCh(char c) {
+            int count = 0;
+            while (IsCh(c)) count++;
+            return count;
+        }
+
+        /// <summary>
+        /// Get character at Index (index unchanged), or '0' for Eos.
+        /// </summary>
+        //public char PeekCh() => _Current;
+
+        /// <summary>
+        /// Get character at relative offset (default = 0) to Index (index unchanged).
+        /// </summary>
+        /// <returns>Character or Eos ('0') if out of range.</returns>
+        public char PeekCh(int offset = 0) {
+            if (offset == 0) return _Current;
+
+            var peekIndex = _index + offset;
+            return peekIndex >= _length || peekIndex < 0 ? _Eos : Source[peekIndex];
+        }
+
+        /// <summary>
+        /// Get character at relative offset to Index (index unchanged), or '0' Eos if out of range
+        /// </summary>
+        //public char PeekNextCh(int offset = 1) {
+        //    var peekIndex = _index + offset;
+        //    return peekIndex >= _length || peekIndex < 0 ? _Eos : Source[peekIndex];
+        //}
+
+        /// <summary>
         /// Check if character at Index matches c (index unchanged).
         /// </summary>
-        public bool IsPeekCh(char c) => _Current == c;
+        //public bool IsPeekCh(char c) => _Current == c;
+
+        /// <summary>
+        /// Check if character at relative offset (default = 0) to Index matches c (index unchanged).
+        /// </summary>
+        public bool IsPeekCh(char c, int offset = 0) => PeekCh(offset) == c;
 
         /// <summary>
         /// Check if character at Index is one of the chars (index unchanged).
         /// </summary>
-        public bool IsPeekAnyCh(string chars) => chars.Contains(_Current);
+        //public bool IsPeekAnyCh(string chars) => chars.Contains(_Current);
+
+        /// <summary>
+        /// Check if character at relative offset (default = 0) to Index matches any one of the chars (index unchanged).
+        /// </summary>
+        public bool IsPeekAnyCh(string chars, int offset = 0) => chars.Contains(PeekCh(offset));
 
         /// <summary>
         /// Check if character at Index + offset matches c (index unchanged).
         /// </summary>
-        public bool IsPeekNextCh(char c, int offset) => PeekNextCh(offset) == c;
+        //public bool IsPeekNextCh(char c, int offset) => PeekNextCh(offset) == c;
 
         /// <summary>
         /// Check character at Index + offset is one of the chars (index unchanged).
         /// </summary>
-        public bool IsPeekNextAnyCh(string chars, int offset) => chars.Contains(PeekNextCh(offset));
+        //public bool IsPeekNextAnyCh(string chars, int offset) => chars.Contains(PeekNextCh(offset));
 
         /// <summary>
         /// Check if text at Index equals matchString and optionally advance the Index if it matches.
