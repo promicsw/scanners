@@ -603,16 +603,23 @@ namespace Psw.Scanners
         /// <summary>
         /// Scan to Eol and optionally skip over Eol:<br/>
         /// - Handles intermediate or last line (with no Eol)<br/>
-        /// - Token contains the intermediate text (excluding the newline)
+        /// - Token contains the intermediate text (excluding the newline, may be empty)
         /// </summary>
-        /// <returns>False if started at Eos or Eol else true</returns>
+        /// <returns>False if started at Eos else true</returns>
         public bool ScanToEol(bool skipEol = true) {
-            if (!IsEol && ScanTo(_nl[0], true)) {
-                if (skipEol) SkipEol();
-                return true;
-            }
-            return false;
+            if (!ScanTo(_nl[0], true)) return false;
+            if (skipEol) SkipEol();
+            return true;
         }
+
+        // This version fails if at Eol
+        //public bool ScanToEol(bool skipEol = true) {
+        //    if (!IsEol && ScanTo(_nl[0], true)) {
+        //        if (skipEol) SkipEol();
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
         /// <summary>
         /// Scan a value (token) to Eol and optionally skip over Eol:<br/>
