@@ -73,13 +73,13 @@ namespace Psw.Scanners
             => IsStringDelim() ? StrLit() : ScanToAny(termChars, orToEos) && ValidToken();
 
         /// <summary>
-        /// Scan Standard Identifier of the form: (letter | _)* (letterordigit | _)*
+        /// Scan Standard Identifier of the form: (letter | _)+ (letterordigit | _)*
         /// </summary>
         /// <returns>True for valid identifier (available via Token) else false</returns>
         public bool StdIdent() => ScanWhile((scn, ch, i) => char.IsLetter(ch) || '_' == ch || i > 0 && char.IsLetterOrDigit(ch));
 
         /// <summary>
-        /// Scan Standard Identifier of the form: (letter | _)* (letterordigit | _ | -)*
+        /// Scan Standard Identifier of the form: (letter | _)+ (letterordigit | _ | -)*
         /// </summary>
         /// <returns>True for valid identifier (available via Token) else false</returns>
         public bool StdIdent2() => ScanWhile((scn, ch, i) => char.IsLetter(ch) || '_' == ch || i > 0 && ('-' == ch || char.IsLetterOrDigit(ch)));

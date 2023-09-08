@@ -70,6 +70,10 @@ namespace Psw.Scanners
                       _tokenEndIndex;   // Index where last Token ends (exclusive)     
 
         /// <sgroup>Token operations</sgroup>
+        /// <groupdescr>
+        /// __Notes:__ Several scanning operations record the scanned text in **Token**. 
+        /// The following services are used to operate on this token.
+        /// </groupdescr>
         /// <summary>
         /// Check if a Token currently exists
         /// </summary>
@@ -475,7 +479,7 @@ namespace Psw.Scanners
         public bool SkipConsecEol() => SkipAny(_nl);
 
         /// <summary>
-        /// Skip all characters while a predicate matches
+        /// Skip all characters while the predicate matches (returns true), or Eos is reached.
         /// </summary>
         public void SkipWhile(Func<char, bool> predicate) {
             int len = _length;
@@ -648,11 +652,11 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Scan all characters while a predicate matches:<br/>
+        /// Scan all characters while a predicate matches, or Eos is reached:<br/>
         /// - Predicate = Func: &lt;this, current char, 0..n index from scan start, bool&gt;<br/>
-        /// - Token contains the scanned characters
+        /// - Token contains the scanned characters.
         /// </summary>
-        /// <returns>True if any characters are scanned (scan pointer after last match) else false (scan pointer unchanged)</returns>
+        /// <returns>True if any characters are scanned (Index after last match) else false (Index unchanged)</returns>
         public bool ScanWhile(Func<TextScanner, char, int, bool> predicate) {
             _tokenStartIndex = _index;
             int len = _length, i = 0;
@@ -741,19 +745,16 @@ namespace Psw.Scanners
 
         // Error Logging ======================================================
 
-        /// <group>Error Logging</group>
+        /// <group>Error Logging and Handling</group>
         /// <summary>
-        ///   Return Line and column number for given or current position
+        ///   Return Line and column number for given or current position in source. Used mainly for error reporting.
         /// </summary>
         /// <param name="pos">
         ///   Position (index) to get line and column for.
-        ///   If this value is -1 use the current scan pointer position
+        ///   If this value is -1 use the current scan Index.
         /// </param>
         /// <returns>
-        ///   anonymous type: line   = line (1..n),
-        ///                   col    = column (1..n),
-        ///                   offset, 
-        ///                   astext = "Ln l+1  Col c+1"
+        ///   Tuple: (line (1..n), col (1..n), offset (0..n), astext ("Ln l+1  Col c+1"))
         /// </returns>
         public (int line, int col, int offset, string astext) GetLineAndColumn(int pos = -1) {
             int ipos = pos < 0 ? _index : pos;
@@ -780,10 +781,10 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Get all text up to and including the line containing pos (excluding NL)<br/>
+        /// Get all text up to and including the line containing pos (excluding Eol)<br/>
         /// - Optionally only get the lastNoofLines if > 0
         /// </summary>
-        /// <param name="pos">Position or -1 for current position</param>
+        /// <param name="pos">Position or -1 for current Index position</param>
         public string GetUptoLine(int pos = -1, int lastNoofLines = 0) {
             int indexPos = pos < 0 ? _index : pos;
             int endPos = Source.IndexOf(_nl[0], indexPos); // Next newline after indexPos
@@ -816,7 +817,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Return Error status
+        /// Return current scanner Error status
         /// </summary>
         public bool IsError() => ErrorLog.IsError;
 
