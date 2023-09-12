@@ -1,16 +1,21 @@
 # Scanners
 A set of high performance Scanners implemented in C# for low-level text/script parsing.  
 
+[![Nuget](https://img.shields.io/nuget/v/Psw.Scanners?style=flat)](https://www.nuget.org/packages/Psw.Scanners/)
+
+<!--[![Nuget](https://img.shields.io/nuget/dt/Psw.Scanners?style=flat)](https://www.nuget.org/packages/Psw.Scanners/)-->
+
+
 ## Scanner overview
 A Scanner is used to scan over and extract *Tokens* from text, check for strings or characters (delimiters), skip over text etc.
 
 > Tokens represent basic units of meaning in the input source code, such as keywords, identifiers, operators and special characters.
 
 The library provides associated utilities and low level scanners (extensible) with a comprehensive set of methods. See the following reference documents for details:
-- [TextScanner](Docs/TextScanner.md): Primary core text scanning facilities
-- [ScriptScanner](Docs/ScriptScanner.md): Extends TextScanner with facilities useful for scanning *scripts* 
-- [ScanErrorLog](Docs/ScanErrorLog.md): Class to log and output scan error messages
-- [ILogScanError](Docs/ILogScanError.md): Interface to allow external entities to log errors in ScanErrorLog
+- [TextScanner](Docs/TextScanner.md): Primary core text scanning facilities.
+- [ScriptScanner](Docs/ScriptScanner.md): Extends TextScanner with facilities useful for scanning *scripts* .
+- [ScanErrorLog](Docs/ScanErrorLog.md): Class to log and output scan error messages.
+- [ILogScanError](Docs/ILogScanError.md): Interface to allow external entities to log errors in ScanErrorLog.
 
 **Simple scanning example:**
 ```csharp
