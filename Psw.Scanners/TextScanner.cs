@@ -34,7 +34,7 @@ namespace Psw.Scanners
         public string Source { get; private set; } = "";   // Source String
 
         /// <summary>
-        /// Get last delimiter logged (when applicable)
+        /// Get last delimiter logged (where applicable).
         /// </summary>
         public char Delim { get; private set; }            // Last Delimiter logged
         /// <summary>
@@ -51,13 +51,13 @@ namespace Psw.Scanners
         protected static char _Eos = '\0';                 // End of source character
 
         /// <summary>
-        /// Get/Set the bound ScanErroLog
+        /// Get/Set the bound ScanErroLog.
         /// </summary>
         public ScanErrorLog ErrorLog { get; set; }         // To record scan/other errors
 
         /// <group>Constructor</group>
         /// <summary>
-        /// Create a TextScanner with given source string and optional 'external' ScanErrorLog (else an internal one is created)
+        /// Create a TextScanner with given source string and 'internal' (errorLog == null) or 'external' ScanErrorLog.
         /// </summary>
         public TextScanner(string source, ScanErrorLog errorLog = null) {
             ErrorLog = errorLog ?? new ScanErrorLog();
@@ -75,17 +75,17 @@ namespace Psw.Scanners
         /// The following services are used to operate on this token.
         /// </groupdescr>
         /// <summary>
-        /// Check if a Token currently exists
+        /// Check if a Token currently exists.
         /// </summary>
         public bool IsToken => _tokenEndIndex > _tokenStartIndex;
 
         /// <summary>
-        /// Get the current Token else string.Empty for none
+        /// Get the current Token else string.Empty for none.
         /// </summary>
         public string Token => IsToken ? Source[_tokenStartIndex.._tokenEndIndex] : string.Empty;
 
         /// <summary>
-        /// Check if the current Token is not null or WhiteSpace
+        /// Check if the current Token is not null or WhiteSpace.
         /// </summary>
         public bool ValidToken() {
             if (IsToken) {
@@ -99,17 +99,17 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Get current token Trimmed
+        /// Get current token Trimmed.
         /// </summary>
         public string TrimToken => Token.Trim();
 
         /// <summary>
-        /// Get current token stripped of comments
+        /// Get current token stripped of comments.
         /// </summary>
         public string StripToken => ScriptScanner.StripComments(Token);
 
         /// <summary>
-        /// Get current token trimmed and stripped of comments
+        /// Get current token trimmed and stripped of comments.
         /// </summary>
         public string TrimStripToken => ScriptScanner.StripComments(TrimToken);
 
@@ -117,7 +117,7 @@ namespace Psw.Scanners
 
         /// <sgroup>Source Management</sgroup>
         /// <summary>
-        /// Set the Scanner Source from a String and reset Index
+        /// Set the Scanner Source from a String and reset Index to start.
         /// </summary>
         public void SetSource(string source) {
             Source = source ?? "";
@@ -126,7 +126,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Insert text at the current Index, and continue scanning from there
+        /// Insert text at the current Index, and continue scanning from there.
         /// </summary>
         public void Insert(string text) {
             Source = Source.Insert(_index, text);
@@ -134,12 +134,12 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Insert text and newline (\r\n or \n) at the current Index, and continue scanning from there
+        /// Insert text and newline (\r\n or \n) at the current Index, and continue scanning from there.
         /// </summary>
         public void InsertLine(string text) => Insert(text + _nl);
 
         /// <summary>
-        /// Remove a section of the Source string, from startIndex up to, but excluding, current Index
+        /// Remove a section of the Source string, from startIndex up to, but excluding, current Index.
         /// </summary>
         public void Remove(int startIndex) {
             var removeLen = _index - startIndex;
@@ -154,8 +154,8 @@ namespace Psw.Scanners
 
         /// <group>Index Management</group>
         /// <summary>
-        /// Get: current scan index<br/> 
-        /// Set: scan index (0 = start, &lt; 0 or &gt; length = end, else intermediate)
+        /// Get: current scan index.<br/> 
+        /// Set: scan index (0 = start, &lt; 0 or &gt; length = end, else intermediate).
         /// </summary>
         public int Index {
             get => _index;
@@ -169,7 +169,7 @@ namespace Psw.Scanners
         // Core Utilities =====================================================
 
         /// <summary>
-        /// Set current scanner state
+        /// Set current scanner state.
         /// </summary>
         protected void ResetAdvance() {
             IsEos = _index >= _length;
@@ -178,7 +178,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Advance Index by count and set state
+        /// Advance Index by count and set state.
         /// </summary>
         protected void Advance(int count = 1) {
             if (!IsEos) {
@@ -190,22 +190,22 @@ namespace Psw.Scanners
 
         /// <sgroup>Core Utilities</sgroup>
         /// <summary>
-        /// Check if Index is at End of Source
+        /// Check if Index is at End of Source.
         /// </summary>
         public bool IsEos { get; private set; }
 
         /// <summary>
-        /// Advance Index to Eos
+        /// Advance Index to Eos.
         /// </summary>
         public void ToEos() => Index = -1;
 
         /// <summary>
-        /// Check if Index is at End of Line
+        /// Query if Index is at End of Line.
         /// </summary>
         public bool IsEol => _Current == _nl[0];
 
         /// <summary>
-        /// Query if Index is at Eos or Eol
+        /// Query if Index is at Eos or Eol.
         /// </summary>
         public bool IsEosOrEol => IsEos || IsEol;
 
@@ -228,11 +228,11 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Check if character at Index is one of the chars
+        /// Check if character at Index is one of the chars.
         /// </summary>
         /// <returns>
-        /// True: if found, advances the Index and logs the char in Delim<br/>
-        /// False: if not found and Index is unchanged
+        /// True: if found, advances the Index and logs the char in Delim.<br/>
+        /// False: if not found and Index is unchanged.
         /// </returns>
         public bool IsAnyCh(string chars) {
             if (!IsPeekAnyCh(chars)) return false;
@@ -242,7 +242,7 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Get count of consecutive matching characters and advances Index
+        /// Get count of consecutive matching characters and advances Index.
         /// </summary>
         public int CountCh(char c) {
             int count = 0;
@@ -274,7 +274,9 @@ namespace Psw.Scanners
         /// <summary>
         /// Check if text at Index equals matchString and optionally advance the Index if it matches.
         /// </summary>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="matchString">String to match.</param>
+        /// <param name="advanceIndex">Advance Index to just after match (default) or not.</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         public bool IsString(string matchString, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos || string.IsNullOrEmpty(matchString)) return false;
 
@@ -293,9 +295,9 @@ namespace Psw.Scanners
         /// Check if text at Index equals any string in matchStrings and optionally advance the Index if it matches.<br/>
         /// - Match contains the matching string.
         /// </summary>
-        /// <param name="matchStrings">Enumerable set of strings</param>
-        /// <param name="advanceIndex">Advance Index to just after match (default) else not</param>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="matchStrings">Enumerable set of strings to match.</param>
+        /// <param name="advanceIndex">Advance Index to just after match (default) else not.</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         public bool IsAnyString(IEnumerable<string> matchStrings, bool advanceIndex = true, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos) return false;
 
@@ -325,10 +327,10 @@ namespace Psw.Scanners
 
         /// <group>Skipping Operations</group>
         /// <summary>
-        /// Skip while character is skipChar
+        /// Skip while character is skipChar.
         /// </summary>
         /// <returns>
-        /// True if not Eos after skipping else false
+        /// True if not Eos after skipping else false.
         /// </returns>
         public bool Skip(char skipChar) {
             while (_Current == skipChar) Advance();
@@ -336,10 +338,10 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Skip while character is any of the skipChars
+        /// Skip while character is any of the skipChars.
         /// </summary>
         /// <returns>
-        /// True if not Eos after skipping else false
+        /// True if not Eos after skipping else false.
         /// </returns>
         public bool SkipAny(string skipChars) {
             if (string.IsNullOrEmpty(skipChars)) return true;
@@ -352,8 +354,8 @@ namespace Psw.Scanners
         /// - Optionally skip over the delimiter if skipOver is true.
         /// </summary>
         /// <returns>
-        ///   True: Found and Index at matching char or next if skipOver = true<br/>
-        ///   False: Not found or Eos. Index not changed
+        ///   True: Found and Index at matching char or next if skipOver = true.<br/>
+        ///   False: Not found or Eos and Index unchanged.
         /// </returns>
         public bool SkipTo(char termChar, bool skipOver = false) {
             int dpos;
@@ -364,12 +366,12 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Skip until any one of the termChars is found.<br/>
-        /// - Delim contains the matching character<br/>
+        /// - Delim contains the matching character.<br/>
         /// - Optionally skip over the delimiter if skipOver is true.
         /// </summary>
         /// <returns>
-        ///   True: Found and Index at matching char or next if skipOver = true<br/>
-        ///   False: Not found or Eos. Index not changed
+        ///   True: Found and Index at matching char or next if skipOver = true.<br/>
+        ///   False: Not found or Eos and Index unchanged.
         /// </returns>
         public bool SkipToAny(string termChars, bool skipOver = false) {
             int dpos;
@@ -380,12 +382,12 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Skip up to given text and optionally skip over it if skipOver is true
+        /// Skip up to given text and optionally skip over it if skipOver is true.
         /// </summary>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         /// <returns>
-        ///   True: Found and Index at start of matching text or just after if skipOver = true<br/>
-        ///   False: Not found or Eos. Index unchanged
+        ///   True: Found and Index at start of matching text or just after if skipOver = true.<br/>
+        ///   False: Not found or Eos and Index unchanged.
         /// </returns>
         public bool SkipToStr(string text, bool skipOver = false, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             int dpos;
@@ -399,12 +401,12 @@ namespace Psw.Scanners
         /// Skip up to first occurrence of any string in matchStrings and optionally skip over the matching string.<br/>
         /// - Match contains the matching string.
         /// </summary>
-        /// <param name="matchStrings">Enumerable set of strings</param>
+        /// <param name="matchStrings">Enumerable set of strings.</param>
         /// <param name="skipOver">Advance Index to just after match (default = false) else not</param>
         /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
         /// <returns>
-        ///   True: Found and Index at start of matching text or just after if skipOver = true<br/>
-        ///   False: Not found or Eos. Index unchanged
+        ///   True: Found and Index at start of matching text or just after if skipOver = true.<br/>
+        ///   False: Not found or Eos and Index unchanged.
         /// </returns>
         public bool SkipToAnyStr(IEnumerable<string> matchStrings, bool skipOver = false, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos) return false;
@@ -430,14 +432,14 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Skip up to first occurrence of any string in delimited matchStrings and optionally skip over the matching string.<br/>
-        /// - Match contains the matching string
+        /// - Match contains the matching string.
         /// </summary>
-        /// <param name="matchStrings">Delimited string and first character must be the delimiter (e.g. "|s1|s2|...")</param>
-        /// <param name="skipOver">Advance Index to just after match (default = false) else not</param>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="matchStrings">Delimited string and first character must be the delimiter (e.g. "|s1|s2|...").</param>
+        /// <param name="skipOver">Advance Index to just after match (default = false) else not.</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         /// <returns>
-        ///   True: Found and Index at start of matching text or just after if skipOver = true<br/>
-        ///   False: Not found or Eos. Index unchanged
+        ///   True: Found and Index at start of matching text or just after if skipOver = true.<br/>
+        ///   False: Not found or Eos and Index unchanged.
         /// </returns>
         public bool SkipToAnyStr(string matchStrings, bool skipOver = false, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos || string.IsNullOrEmpty(matchStrings)) return false;
@@ -445,10 +447,10 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Skip to Eol or Eos (last line)<br/>
+        /// Skip to Eol or Eos (last line).<br/>
         /// - Optionally skip over the Eol if skipOver is true.
         /// </summary>
-        /// <returns> False if started at Eos else True</returns>
+        /// <returns> False if started at Eos else True.</returns>
         public bool SkipToEol(bool skipOver = true) {
             if (IsEos) return false;
 
@@ -460,10 +462,10 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Skip one NewLine. Must currently be at the newline (else ignored)
+        /// Skip one NewLine. Must currently be at the newline (else ignored).
         /// </summary>
         /// <returns>
-        /// True if not Eos after skipping else false
+        /// True if not Eos after skipping else false.
         /// </returns>
         public bool SkipEol() {
             if (_Current == _nl[0]) Advance(_nl.Length);
@@ -471,10 +473,10 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Skip All consecutive NewLines. Must currently be at a newline (else ignored)
+        /// Skip All consecutive NewLines. Must currently be at a newline (else ignored).
         /// </summary>
         /// <returns>
-        /// True if not Eos after skipping else false
+        /// True if not Eos after skipping else false.
         /// </returns>
         public bool SkipConsecEol() => SkipAny(_nl);
 
@@ -495,11 +497,11 @@ namespace Psw.Scanners
         /// <summary>
         /// Scans up to the delim or to Eos (if orToEos it true):<br/>
         /// - Optionally skip over the delimiter if skipOver is true.<br/>
-        /// - Token contains the intermediate text (excluding delimiter)
+        /// - Token contains the intermediate text (excluding delimiter).
         /// </summary>
         /// <returns>
         /// True: Delimiter found or orToEos is true. Index at Eos, delimiter or after delimiter if skipOver<br/>
-        /// False: Started at Eos or delimiter not found (and orToEos is false). Index unchanged
+        /// False: Started at Eos or delimiter not found (and orToEos is false). Index unchanged.
         /// </returns>
         public bool ScanTo(char delim, bool orToEos = false, bool skipOver = false) {
             if (IsEos) return false;   // Scan pointer at Eos
@@ -521,11 +523,11 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Scans up to any character in delims or to Eos (if orToEos it true):<br/>
-        /// - Token contains the intermediate text (excluding delimiter)
+        /// - Token contains the intermediate text (excluding delimiter).
         /// </summary>
         /// <returns>
-        /// True: Delimiter found or orToEos is true. Index at delimiter or Eos<br/>
-        /// False: Started at Eos, delimiter not found (and orToEos is false) or delims is blank. Index unchanged
+        /// True: Delimiter found or orToEos is true. Index at delimiter or Eos.<br/>
+        /// False: Started at Eos, delimiter not found (and orToEos is false) or delims is blank. Index unchanged.
         /// </returns>
         public bool ScanToAny(string delims, bool orToEos = false) {
             if (IsEos || string.IsNullOrEmpty(delims)) return false;   // Scan pointer at end or no delims
@@ -547,12 +549,12 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Scan up to a match of findString:<br/> 
-        /// - Token contains the intermediate text (excluding findString)
+        /// - Token contains the intermediate text (excluding findString).
         /// </summary>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         /// <returns>
-        ///   True:  findString found and Index directly after findString
-        ///   False: findString not found and Index remains at original position<br/>
+        ///   True:  findString found and Index directly after findString.
+        ///   False: findString not found and Index remains at original position.<br/>
         /// </returns>
         public bool ScanToStr(string findString, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos || 0 == findString.Length) return false;
@@ -567,16 +569,16 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Scan up to first occurrence of any string in matchStrings.<br/>
+        /// Scan up to first occurrence of any string in matchStrings:<br/>
         /// - Token contains the intermediate text (excluding matching string).<br/>
         /// - Match contains the matching string.
         /// </summary>
-        /// <param name="matchStrings">Enumerable set of strings</param>
-        /// <param name="skipOver">Advance Index to just after match (default = false) else not</param>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="matchStrings">Enumerable set of strings.</param>
+        /// <param name="skipOver">Advance Index to just after match (default = false) else not.</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         /// <returns>
-        ///   True: Found and Index at start of matching text or just after if skipOver = true<br/>
-        ///   False: Not found or Eos. Index unchanged
+        ///   True: Found and Index at start of matching text or just after if skipOver = true.<br/>
+        ///   False: Not found or Eos. Index unchanged.
         /// </returns>
         public bool ScanToAnyStr(IEnumerable<string> matchStrings, bool skipOver = false, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             _tokenStartIndex = Index;
@@ -592,12 +594,12 @@ namespace Psw.Scanners
         /// - Token contains the intermediate text (excluding matching string).<br/>
         /// - Match contains the matching string.
         /// </summary>
-        /// <param name="matchStrings">Delimited string and first character must be the delimiter (e.g. "|s1|s2|...")</param>
-        /// <param name="skipOver">Advance Index to just after match (default = false) else not</param>
-        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase)</param>
+        /// <param name="matchStrings">Delimited string and first character must be the delimiter (e.g. "|s1|s2|...").</param>
+        /// <param name="skipOver">Advance Index to just after match (default = false) else not.</param>
+        /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         /// <returns>
-        ///   True: Found and Index at start of matching text or just after if skipOver = true<br/>
-        ///   False: Not found or Eos. Index unchanged
+        ///   True: Found and Index at start of matching text or just after if skipOver = true.<br/>
+        ///   False: Not found or Eos. Index unchanged.
         /// </returns>
         public bool ScanToAnyStr(string matchStrings, bool skipOver = false, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos || string.IsNullOrEmpty(matchStrings)) return false;
@@ -606,31 +608,23 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Scan to Eol and optionally skip over Eol:<br/>
-        /// - Handles intermediate or last line (with no Eol)<br/>
-        /// - Token contains the intermediate text (excluding the newline, may be empty)
+        /// - Handles intermediate or last line (with no Eol).<br/>
+        /// - Token contains the intermediate text (excluding the newline, may be empty).
         /// </summary>
-        /// <returns>False if started at Eos else true</returns>
+        /// <returns>False if started at Eos else true.</returns>
         public bool ScanToEol(bool skipEol = true) {
             if (!ScanTo(_nl[0], true)) return false;
             if (skipEol) SkipEol();
             return true;
         }
 
-        // This version fails if at Eol
-        //public bool ScanToEol(bool skipEol = true) {
-        //    if (!IsEol && ScanTo(_nl[0], true)) {
-        //        if (skipEol) SkipEol();
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
         /// <summary>
         /// Scan a value (token) to Eol and optionally skip over Eol:<br/>
-        /// - Handles intermediate or last line (with no Eol)<br/>
-        /// - Token contains the intermediate text (excluding the newline)
+        /// - Handles intermediate or last line (with no Eol).<br/>
+        /// - Token contains the intermediate text (excluding the newline).
         /// </summary>
-        /// <returns>False if started at Eos or a non-valid Token else true</returns>
+        /// <returns>False if started at Eos or a non-valid Token else true.</returns>
         public bool ValueToEol(bool skipEol = true) {
             if (ScanTo(_nl[0], true)) {
                 if (skipEol) SkipEol();
@@ -641,7 +635,7 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Return the remainder of the current line without changing the Index position.
-        /// (typically used for debugging)
+        /// (typically used for debugging).
         /// </summary>
         public string LineRemainder() {
             var curPos = Index;
@@ -653,10 +647,10 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Scan all characters while a predicate matches, or Eos is reached:<br/>
-        /// - Predicate = Func: &lt;this, current char, 0..n index from scan start, bool&gt;<br/>
+        /// - Predicate = Func: &lt;this, current char, 0..n index from scan start, bool&gt;.<br/>
         /// - Token contains the scanned characters.
         /// </summary>
-        /// <returns>True if any characters are scanned (Index after last match) else false (Index unchanged)</returns>
+        /// <returns>True if any characters are scanned (Index after last match) else false (Index unchanged).</returns>
         public bool ScanWhile(Func<TextScanner, char, int, bool> predicate) {
             _tokenStartIndex = _index;
             int len = _length, i = 0;
@@ -676,34 +670,34 @@ namespace Psw.Scanners
 
         /// <group>Type Operations</group>
         /// <summary>
-        /// Check if current character matches a predicate (without advancing Index)
+        /// Check if current character matches a predicate (without advancing Index).
         /// </summary>
         public bool IsChType(Func<char, bool> predicate) => !IsEos && predicate(_Current);
 
         /// <summary>
-        /// Check if current character is a Digit (via char.IsDigit()) (without advancing Index)
+        /// Check if current character is a Digit (via char.IsDigit()) (without advancing Index).
         /// </summary>
         public bool IsDigit() => IsChType(c => char.IsDigit(c));
 
         /// <summary>
-        /// Check if current character is a Letter (via char.IsLetter()) (without advancing Index)
+        /// Check if current character is a Letter (via char.IsLetter()) (without advancing Index).
         /// </summary>
         public bool IsLetter() => IsChType(c => char.IsLetter(c));
 
         /// <summary>
-        /// Check if current character is a LetterOrDigit (via char.IsLetterOrDigit()) (without advancing Index)
+        /// Check if current character is a LetterOrDigit (via char.IsLetterOrDigit()) (without advancing Index).
         /// </summary>
         public bool IsLetterOrDigit() => IsChType(c => char.IsLetterOrDigit(c));
 
         /// <summary>
-        /// Check if current character is a Decimal digit (IsDigit || '.') (without advancing Index)
+        /// Check if current character is a Decimal digit (IsDigit || '.') (without advancing Index).
         /// </summary>
         public bool IsDecimal() => IsDigit() || _Current == '.';
 
         /// <summary>
-        /// Scan a decimal value of the form n*.n* 
+        /// Scan a decimal value of the form n*.n*.
         /// </summary>
-        /// <returns>True and output double else false</returns>
+        /// <returns>True and output double else false.</returns>
         public bool NumDecimal(out double value) {
             var dot = false;
             _tokenStartIndex = _index;
@@ -720,9 +714,9 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Scan an integer value of the form n* 
+        /// Scan an integer value of the form n*. 
         /// </summary>
-        /// <returns>True and output int else false</returns>
+        /// <returns>True and output int else false.</returns>
         public bool NumInt(out int value) {
             if (ScanWhile((scn, ch, i) => char.IsDigit(ch))) {
                 if (!int.TryParse(Token, out value)) return false;
@@ -754,7 +748,7 @@ namespace Psw.Scanners
         ///   If this value is -1 use the current scan Index.
         /// </param>
         /// <returns>
-        ///   Tuple: (line (1..n), col (1..n), offset (0..n), astext ("Ln l+1  Col c+1"))
+        ///   Tuple: (line (1..n), col (1..n), offset (0..n), astext ("Ln l+1  Col c+1")).
         /// </returns>
         public (int line, int col, int offset, string astext) GetLineAndColumn(int pos = -1) {
             int ipos = pos < 0 ? _index : pos;
@@ -781,10 +775,10 @@ namespace Psw.Scanners
         }
 
         /// <summary>
-        /// Get all text up to and including the line containing pos (excluding Eol)<br/>
-        /// - Optionally only get the lastNoofLines if > 0
+        /// Get all text up to and including the line containing pos (excluding Eol):<br/>
+        /// - Optionally only get the lastNoofLines if > 0.
         /// </summary>
-        /// <param name="pos">Position or -1 for current Index position</param>
+        /// <param name="pos">Position or -1 for current Index position.</param>
         public string GetUptoLine(int pos = -1, int lastNoofLines = 0) {
             int indexPos = pos < 0 ? _index : pos;
             int endPos = Source.IndexOf(_nl[0], indexPos); // Next newline after indexPos
@@ -807,19 +801,19 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Log an Error (see ScanErrorLog) with given erroMsg and errorContext:<br/>
-        /// - At current Index position (default errIndex = -1) or at given errIndex ( >= 0 )<br/>
-        /// - Records the last 10 lines and Line and Column no in ErrorLog - for later display
+        /// - At current Index position (default errIndex = -1) or at given errIndex ( >= 0 ).<br/>
+        /// - Records the last 10 lines and Line and Column no in ScanErrorLog - for later display.
         /// </summary>
-        /// <returns>False always - so can use to return false from caller</returns>
+        /// <returns>False always - so can use to return false from caller.</returns>
         public bool LogError(string errorMsg, string errorContext = "Parse error", int errIndex = -1) {
             var errPos = GetLineAndColumn(errIndex);
             return ErrorLog.LogError(errorMsg, errorContext, GetUptoLine(errIndex, 10), errPos.line, errPos.col);
         }
 
         /// <summary>
-        /// Return current scanner Error status
+        /// Return current scanner Error status.
         /// </summary>
-        public bool IsError() => ErrorLog.IsError;
+        public bool IsError => ErrorLog.IsError;
 
     }
 }
