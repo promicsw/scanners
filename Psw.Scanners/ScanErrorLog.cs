@@ -8,12 +8,10 @@ using System.Text;
 namespace Psw.Scanners
 {
     /// <summary>
-    /// Utility class for Logging errors while scanning and then produce formated error output in various forms.
-    /// 
+    /// Utility class for Logging errors while scanning and then produce formated error output in various forms.<br/>
     /// > If the error is logged via one of the Scanners then the ScriptSegment and position is logged by the scanner.
-    /// 
-    /// Error output has the following basic form:
     /// </summary>
+    /// <mdoc> Error output has the following basic form:</mdoc>
     /// <code lang="con">
     /// Sample Error                              // Error Heading 
     ///  FuncName(prm1, 'prm2')  sample body }    // ScriptSegment
@@ -25,38 +23,43 @@ namespace Psw.Scanners
     {
         /// <group>Properties</group>
         /// <summary>
-        /// Get/Set Error status
+        /// Get/Set Error status.
         /// </summary>
         public bool IsError { get; set; }
         /// <summary>
-        /// Get/Set Error massage
+        /// Get/Set Error message.
         /// </summary>
         public string ErrorMessage { get; set; } = string.Empty;
         /// <summary>
-        /// Get/Set Error context
+        /// Get/Set Error context.
         /// </summary>
         public string ErrorContext { get; set; } = string.Empty;
         /// <summary>
-        /// Get/Set Error script segment (if applicable)
+        /// Get/Set Error script segment (if applicable).
         /// </summary>
         public string ScriptSegment { get; set; }
-        public string ErrorFile { get; private set; }
         /// <summary>
-        /// Get/Set Error line number in a script (1..n)
+        /// Get/Set the Error filename:<br/>
+        /// - For certain situations it may be convenient to record a filename with an error when processing multiple files.<br/>
+        /// - In the above case: the ErrorFileName may be set and is then associated with any subsequent error, until it is changed. 
+        /// </summary>
+        public string ErrorFileName { get; set; }
+        /// <summary>
+        /// Get/Set Error line number in a script (1..n).
         /// </summary>
         public int Ln { get; set; }
         /// <summary>
-        /// Get/Set Error column number (1..n)
+        /// Get/Set Error column number (1..n).
         /// </summary>
         public int Col { get; set; }
-        /// <summary>
-        /// Get/Set Error filename (if applicable - and subsequent errors will be logged with this filename until it is changed) 
-        /// </summary>
-        public string FileName { get; set; }
+        ///// <summary>
+        ///// Get/Set Error filename (if applicable - and subsequent errors will be logged with this filename in ErrorFile until it is changed). 
+        ///// </summary>
+        //public string FileName { get; set; }
 
         /// <group>Methods</group>
         /// <summary>
-        /// Log an Error and set IsError to true
+        /// Log an Error and set IsError to true.
         /// </summary>
         /// <param name="errMsg">Error message</param>
         /// <param name="errContext">Error context</param>
@@ -65,7 +68,7 @@ namespace Psw.Scanners
         /// <param name="col">Column number in script segment</param>
         /// <returns>False always - so it can return false from caller (if required)</returns>
         public bool LogError(string errMsg, string errContext = "Parse error", string scriptSegment = null, int ln = 1, int col = 1) {
-            (IsError, ErrorMessage, ErrorContext, ScriptSegment, Ln, Col, ErrorFile) = (true, errMsg, errContext, scriptSegment, ln, col, FileName);
+            (IsError, ErrorMessage, ErrorContext, ScriptSegment, Ln, Col) = (true, errMsg, errContext, scriptSegment, ln, col);
             return false;
         }
 
@@ -81,7 +84,7 @@ namespace Psw.Scanners
             }
 
             sb.AppendLine($"<span class='se-pos'>{new string('-', Col - 1)}^ (Ln:{Ln} Ch:{Col})</span>");
-            if (!string.IsNullOrEmpty(ErrorFile)) sb.AppendLine($"<span class='se-pos'>Filename: {ErrorFile}</span>");
+            if (!string.IsNullOrEmpty(ErrorFileName)) sb.AppendLine($"<span class='se-pos'>Filename: {ErrorFileName}</span>");
             sb.AppendLine($"<span class='se-msg'>{ErrorContext}: {ErrorMessage}</span>");
             return sb.ToString();
         }
@@ -98,7 +101,7 @@ namespace Psw.Scanners
             }
 
             sb.AppendLine($"{new string('-', Col - 1)}^ (Ln:{Ln} Ch:{Col})");
-            if (!string.IsNullOrEmpty(ErrorFile)) sb.AppendLine($"Filename: {ErrorFile}");
+            if (!string.IsNullOrEmpty(ErrorFileName)) sb.AppendLine($"Filename: {ErrorFileName}");
             sb.AppendLine($"{ErrorContext}: {ErrorMessage}");
             return sb.ToString();
         }
@@ -122,7 +125,7 @@ namespace Psw.Scanners
             if (IsError) {
                 if (!string.IsNullOrWhiteSpace(ScriptSegment)) WriteLn(cscript, ScriptSegment);
                 WriteLn(cpos, $"{new string('-', Col - 1)}^ (Ln:{Ln} Ch:{Col})");
-                if (!string.IsNullOrEmpty(ErrorFile)) WriteLn(cpos, $"Filename: {ErrorFile}");
+                if (!string.IsNullOrEmpty(ErrorFileName)) WriteLn(cpos, $"Filename: {ErrorFileName}");
                 WriteLn(cerror, $"{ErrorContext}: {ErrorMessage}");
             }
             s.Append(ccode(0));

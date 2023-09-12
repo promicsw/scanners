@@ -6,14 +6,14 @@
 namespace Psw.Scanners
 {
     /// <summary>
-    /// Interface defining a LogError method that can be used for error logging during scanning/parsing operations.
+    /// Interface defining a LogError method that can be used for error logging during scanning/parsing/other operations.<br/>
     /// 
-    /// TextScanner (and all derivatives) implement this interface on the bound [ScanErrorLog](Docs/ScanErrorLog.md)
+    /// > TextScanner (and all derivatives) implement this interface on the bound [ScanErrorLog](Docs/ScanErrorLog.md)
     /// </summary>
     public interface ILogScanError
     {
         /// <summary>
-        /// Log an error while scanning and parsing.
+        /// Log an error while scanning/parsing/other.
         /// </summary>
         /// <param name="errorMsg">Error message to log</param>
         /// <param name="errorContext">Error context to log</param>
