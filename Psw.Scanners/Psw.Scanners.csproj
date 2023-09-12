@@ -15,11 +15,11 @@
     <PackageTags>scanner;lexer;parsing;c#;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>Nuget.md</PackageReadmeFile>
-    <PackageReleaseNotes>ScanToEol now does not fail at Eol, but may result in an empty Token</PackageReleaseNotes>
+    <PackageReleaseNotes>ILogScanError changes</PackageReleaseNotes>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageOutputPath>d:\PromicSW_GitHub\LocalNuget\</PackageOutputPath>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
