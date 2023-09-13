@@ -554,7 +554,7 @@ namespace Psw.Scanners
         /// <param name="comp">Comparison type (default = StringComparison.InvariantCultureIgnoreCase).</param>
         /// <returns>
         ///   True:  findString found and Index directly after findString.
-        ///   False: findString not found and Index remains at original position.<br/>
+        ///   False: findString not found and Index remains at original position.
         /// </returns>
         public bool ScanToStr(string findString, StringComparison comp = StringComparison.InvariantCultureIgnoreCase) {
             if (IsEos || 0 == findString.Length) return false;
