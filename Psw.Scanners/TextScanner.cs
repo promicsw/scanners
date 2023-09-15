@@ -113,6 +113,14 @@ namespace Psw.Scanners
         /// </summary>
         public string TrimStripToken => ScriptScanner.StripComments(TrimToken);
 
+        /// <summary>
+        /// Manually set the Token start and end index, which can be used to retrieve the token on the next call:<br/>
+        /// - The scanner automatically maintains these indexes for any operation that record a token.<br/>
+        /// - This should only be used in special cases (say for extensions). The values are set to 0 if out of range;
+        /// </summary>
+        public void SetTokenRange(int startIndex, int endIndex) 
+            => (_tokenStartIndex, _tokenEndIndex) = (startIndex < 0 || startIndex > _length ? 0 : startIndex, endIndex < 0 || endIndex > _length ? 0 : endIndex);
+
         // Source Management ==================================================
 
         /// <sgroup>Source Management</sgroup>
@@ -491,6 +499,66 @@ namespace Psw.Scanners
             ResetAdvance();
         }
 
+        /// <summary>
+        /// Skip a block delimited by blockStart and blockEnd:<br /> 
+        /// - Handles Nesting.
+        /// </summary>
+        /// <param name="isOpen">False - current Index at start of block else Index just inside block.</param>
+        /// <returns>
+        /// True if not at the start of a non-open block or for a valid block (Index positioned after block).<br/> 
+        /// Else false and Logs an error (Index unchanged).
+        /// </returns>
+        public bool SkipBlock(string blockStart, string blockEnd, bool isOpen = false) {
+            var matchStrings = new List<string> { blockStart, blockEnd };
+            int level = 1;
+            var startPos = Index;
+
+            if (!isOpen) {
+                if (IsEol || !IsString(blockStart)) return true;  // Not at blockStart: Do noting and return true;
+            }
+
+            while (SkipToAnyStr(matchStrings, true) && level > 0) {
+                if (Match == blockStart) level++;
+                else level--;
+            }
+
+            if (level > 0) { // No block terminator
+                Index = startPos; // Reset Index
+                return LogError($"Block terminator not found for {blockStart} ... {blockEnd} (may also be due to bad nesting)", "Scan Block");
+            }
+            else return true;
+        }
+
+        /** Experimental: Many permutations to sort out!
+        public bool SkipBlock(List<DelimPair> delimPairs, bool isOpen = false) {
+            if (delimPairs.Count == 0) return true; 
+
+            string blockStart = delimPairs[0].Start, blockEnd = delimPairs[0].End;
+            if (delimPairs.Count == 1) SkipBlock(blockStart, blockEnd);
+
+            if (!isOpen) {
+                if (IsEol || !IsString(blockStart)) return true;  // Not at blockStart: Do noting and return true;
+            }
+
+            var matchStrings = new List<string> { blockStart, blockEnd };
+            int level = 1;
+            var startPos = Index;
+
+            
+
+            while (SkipToAnyStr(matchStrings, true) && level > 0) {
+                if (Match == blockStart) level++;
+                else level--;
+            }
+
+            if (level > 0) { // No block terminator
+                Index = startPos; // Reset Index
+                return LogError($"Block terminator not found for {blockStart} ... {blockEnd} (may also be due to bad nesting)", "Scan Block");
+            }
+            else return true;
+        }
+        **/
+
         // Scanning Operations ================================================
 
         /// <group>Scanning Operations</group>
@@ -665,6 +733,25 @@ namespace Psw.Scanners
             return false;
         }
 
+        /// <summary>
+        /// Scan a block delimited by blockStart and blockEnd:<br /> 
+        /// - Handles Nesting.<br/>
+        /// - Token contains the block content excluding the block delimiters.
+        /// </summary>
+        /// <param name="isOpen">False - current Index at start of block else Index just inside block.</param>
+        /// <returns>
+        /// True if not at the start of a non-open block or for a valid block (Index positioned after block).<br/> 
+        /// Else false and Logs an error (Index unchanged).
+        /// </returns>
+        public bool ScanBlock(string blockStart, string blockEnd, bool isOpen = false) {
+            _tokenStartIndex = Index + (isOpen ? 0 : blockStart.Length);
+
+            if (SkipBlock(blockStart, blockEnd, isOpen)) { 
+                _tokenEndIndex = Index - blockEnd.Length;
+                return true;
+            }
+            return false;
+        }
 
         // Type Operations ====================================================
 

@@ -26,6 +26,7 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 | ``P: ScanErrorLog ErrorLog`` | Get/Set the bound ScanErroLog.<br/> |
 | ***Token operations:*** | *__Notes:__ Several scanning operations record the scanned text in **Token**. The following services are used to operate on this token.* |
 | ``P: bool IsToken`` | Check if a Token currently exists.<br/> |
+| ``M: void SetTokenRange(int startIndex, int endIndex)`` | Manually set the Token start and end index, which can be used to retrieve the token on the next call:<br/>- The scanner automatically maintains these indexes for any operation that record a token.<br/>- This should only be used in special cases (say for extensions). The values are set to 0 if out of range;<br/> |
 | ``P: string StripToken`` | Get current token stripped of comments.<br/> |
 | ``P: string Token`` | Get the current Token else string.Empty for none.<br/> |
 | ``P: string TrimStripToken`` | Get current token trimmed and stripped of comments.<br/> |
@@ -65,6 +66,7 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 | ``M: bool SkipEol()`` | Skip one NewLine. Must currently be at the newline (else ignored).<br/><br/>**Returns:**<br/>True if not Eos after skipping else false. |
 | ``M: bool SkipConsecEol()`` | Skip All consecutive NewLines. Must currently be at a newline (else ignored).<br/><br/>**Returns:**<br/>True if not Eos after skipping else false. |
 | ``M: void SkipWhile(Func<char, bool> predicate)`` | Skip all characters while the predicate matches (returns true), or Eos is reached.<br/> |
+| ``M: bool SkipBlock(string blockStart, string blockEnd, bool isOpen = false)`` | Skip a block delimited by blockStart and blockEnd: <br/>- Handles Nesting.<br/><br/>**Parameters:**<br/><code>isOpen:</code> False - current Index at start of block else Index just inside block.<br/><br/>**Returns:**<br/>True if not at the start of a non-open block or for a valid block (Index positioned after block). <br/>Else false and Logs an error (Index unchanged). |
 | ***Scanning Operations:*** |  |
 | ``M: bool ScanTo(char delim, bool orToEos = false, bool skipOver = false)`` | Scans up to the delim or to Eos (if orToEos it true):<br/>- Optionally skip over the delimiter if skipOver is true.<br/>- Token contains the intermediate text (excluding delimiter).<br/><br/>**Returns:**<br/>True: Delimiter found or orToEos is true. Index at Eos, delimiter or after delimiter if skipOver<br/>False: Started at Eos or delimiter not found (and orToEos is false). Index unchanged. |
 | ``M: bool ScanToAny(string delims, bool orToEos = false)`` | Scans up to any character in delims or to Eos (if orToEos it true):<br/>- Token contains the intermediate text (excluding delimiter).<br/><br/>**Returns:**<br/>True: Delimiter found or orToEos is true. Index at delimiter or Eos.<br/>False: Started at Eos, delimiter not found (and orToEos is false) or delims is blank. Index unchanged. |
@@ -75,6 +77,7 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 | ``M: bool ValueToEol(bool skipEol = true)`` | Scan a value (token) to Eol and optionally skip over Eol:<br/>- Handles intermediate or last line (with no Eol).<br/>- Token contains the intermediate text (excluding the newline).<br/><br/>**Returns:**<br/>False if started at Eos or a non-valid Token else true. |
 | ``M: string LineRemainder()`` | Return the remainder of the current line without changing the Index position.<br/>(typically used for debugging).<br/> |
 | ``M: bool ScanWhile(Func<TextScanner, char, int, bool> predicate)`` | Scan all characters while a predicate matches, or Eos is reached:<br/>- Predicate = Func: &lt;this, current char, 0..n index from scan start, bool&gt;.<br/>- Token contains the scanned characters.<br/><br/>**Returns:**<br/>True if any characters are scanned (Index after last match) else false (Index unchanged). |
+| ``M: bool ScanBlock(string blockStart, string blockEnd, bool isOpen = false)`` | Scan a block delimited by blockStart and blockEnd: <br/>- Handles Nesting.<br/>- Token contains the block content excluding the block delimiters.<br/><br/>**Parameters:**<br/><code>isOpen:</code> False - current Index at start of block else Index just inside block.<br/><br/>**Returns:**<br/>True if not at the start of a non-open block or for a valid block (Index positioned after block). <br/>Else false and Logs an error (Index unchanged). |
 | ***Type Operations:*** |  |
 | ``M: bool IsChType(Func<char, bool> predicate)`` | Check if current character matches a predicate (without advancing Index).<br/> |
 | ``M: bool IsDigit()`` | Check if current character is a Digit (via char.IsDigit()) (without advancing Index).<br/> |
