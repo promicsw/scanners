@@ -113,13 +113,21 @@ namespace Psw.Scanners
         /// </summary>
         public string TrimStripToken => ScriptScanner.StripComments(TrimToken);
 
-        /// <summary>
-        /// Manually set the Token start and end index, which can be used to retrieve the token on the next call:<br/>
-        /// - The scanner automatically maintains these indexes for any operation that record a token.<br/>
-        /// - This should only be used in special cases (say for extensions). The values are set to 0 if out of range;
+                /// <summary>
+        ///  Manually set the Token start and end index, which will be used to retrieve the Token on the next call:<br/>
+        /// - The scanner automatically maintains these indexes for any operation that records a token.<br/>
+        /// - This should only be used in special cases (say for extensions). The values are set to 0 (empty Token) if out of range.
         /// </summary>
-        public void SetTokenRange(int startIndex, int endIndex) 
-            => (_tokenStartIndex, _tokenEndIndex) = (startIndex < 0 || startIndex > _length ? 0 : startIndex, endIndex < 0 || endIndex > _length ? 0 : endIndex);
+        /// <param name="startIndex">The zero-based starting position, or less-than zero for the current index position.</param>
+        /// <param name="endIndex">The zero-based ending position. Adjusts to Eos if less-than zero or out of range.</param>
+        public void SetTokenRange(int startIndex, int endIndex) {
+            _tokenStartIndex = _tokenEndIndex = 0;
+            if (startIndex >= _length) return;
+            _tokenStartIndex = startIndex < 0 ? Index : startIndex;
+            _tokenEndIndex = endIndex < 0 || endIndex > _length ? _length : endIndex;
+        }
+
+       
 
         // Source Management ==================================================
 
@@ -156,6 +164,25 @@ namespace Psw.Scanners
                 _index = startIndex;
                 ResetAdvance();
             }
+        }
+
+        /// <summary>
+        /// Retrieve a substring of the scanner Source:<br/>
+        /// - Mainly used for debugging and tracing.
+        /// </summary>
+        /// <param name="startIndex">The zero-based starting position, or less-than zero for the current index position.</param>
+        /// <param name="length">The number of characters to retrieve, Adjusts to Eos if less-than zero or out of range.</param>
+        /// <returns>
+        /// A string from startIndex of length length:<br/>
+        /// - Or empty string if startIndex is greater-than source length or length is zero.
+        /// </returns>
+        public string SubSource(int startIndex, int length = -1) {
+            if (startIndex >= _length || length == 0) return "";
+            startIndex = startIndex < 0 ? Index : startIndex;
+            int endIndex = length < 0 ? _length : startIndex + length;
+            if (endIndex > _length) endIndex = _length;
+
+            return Source[startIndex..endIndex];
         }
 
         // Index Management ===================================================
@@ -703,7 +730,7 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Return the remainder of the current line without changing the Index position.
-        /// (typically used for debugging).
+        /// (mainly used for debugging or tracing).
         /// </summary>
         public string LineRemainder() {
             var curPos = Index;

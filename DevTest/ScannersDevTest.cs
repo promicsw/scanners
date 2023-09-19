@@ -82,6 +82,7 @@ bool ScanSample() {
 void TestStringBlockScan() {
     WriteLine("Test String Block Scan:");
 
+
     void Test(string block, bool isOpen = false) {
         var scn = new ScriptScanner(block);
         WriteLine();
@@ -89,6 +90,9 @@ void TestStringBlockScan() {
         if (scn.ScanBlock("/*", "*/", isOpen)) {
             WriteLine($"  Pass: [{scn.Token}]");
             WriteLine($"  Remainder: {scn.LineRemainder()}");
+            WriteLine($"  Remainder via SubSource: {scn.SubSource(-1, -1)}");
+            WriteLine($"  Remainder via SubSource (+1): {scn.SubSource(scn.Index+1, -1)}");
+            WriteLine($"  Remainder via SubSource (+2, 4): {scn.SubSource(scn.Index+1, 4)}");
         }
         else WriteLine(scn.ErrorLog.AsConsoleError("Fail:"));
     }
