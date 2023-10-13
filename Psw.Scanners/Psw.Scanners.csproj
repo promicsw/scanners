@@ -5,14 +5,14 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <Title>Scanners</Title>
+    <Title>Text and Script Scanners</Title>
     <Authors>Andre Pretorius</Authors>
     <Company>Promic Software</Company>
-    <Description>A set of high performance Scanners for low-level text/script parsing.</Description>
+    <Description>A set of high performance Scanners for low-level text and script scanning/parsing.</Description>
     <Copyright>2023 Promic Software</Copyright>
     <PackageProjectUrl>https://github.com/promicsw/scanners</PackageProjectUrl>
     <RepositoryUrl>https://github.com/promicsw/scanners</RepositoryUrl>
-    <PackageTags>scanner;lexer;parsing;c#;</PackageTags>
+    <PackageTags>text scanner;script scanner;lexer;parsing;c#;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>Nuget.md</PackageReadmeFile>
     <PackageReleaseNotes>ILogScanError changes</PackageReleaseNotes>
@@ -20,9 +20,14 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageOutputPath>d:\PromicSW_GitHub\LocalNuget\</PackageOutputPath>
     <Version>1.0.3</Version>
+    <PackageIcon>PswLogo.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\LocalNuget\Media\PswLogo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\Nuget\Nuget.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
