@@ -25,7 +25,19 @@ namespace Psw.Scanners
         /// <summary>
         /// Create a ScripScanner with given source string and 'internal' (errorLog == null) or 'external' ScanErrorLog.
         /// </summary>
-        public ScriptScanner(string source = "", ScanErrorLog errorLog = null) : base(source, errorLog) { }
+        public ScriptScanner(string source = "", ScanErrorLog errorLog = null) : base(source, errorLog) => SetScriptComment();
+
+        // Comment Configuration ==============================================
+
+        public ScriptScanner SetScriptComment(ScriptComment scriptComment) {
+            _scriptComment = scriptComment.Clone(this);
+            return this;
+        }
+
+        public ScriptScanner SetScriptComment(string lineComment = "//", string blockCommentStart = "/*", string blockCommentEnd = "*/") { 
+            _scriptComment = new ScriptComment(this, lineComment, blockCommentStart, blockCommentEnd);
+            return this; ;
+        }
 
         // String Delimiter ===================================================
 
@@ -98,7 +110,8 @@ namespace Psw.Scanners
             if (!ValidBlockDelims(blockDelims)) return LogError($"Invalid Block delimiters \"{blockDelims}\" defined in call to ScanBlock", "Scan Block");
 
             char blockStart = blockDelims[0], blockEnd = blockDelims[1];
-            string delims = StringDelim + blockStart + blockEnd + '/';
+            //string delims = StringDelim + blockStart + blockEnd + '/';
+            string delims = StringDelim + blockStart + blockEnd + _scriptComment.CommentStartChars;
             int level = 0;
             int startIndex = Index;
 
@@ -116,10 +129,12 @@ namespace Psw.Scanners
                     else continue;
                 }
 
-                if (IsPeekCh('/')) {
-                    if (IsComment()) continue; // SkipWSC will skip it
-                    else NextCh(); // skip over
-                }
+                if (IsComment()) continue; // SkipWSC will skip it
+
+                //if (IsPeekCh('/')) {
+                //    if (IsComment()) continue; // SkipWSC will skip it
+                //    else NextCh(); // skip over
+                //}
 
                 if (IsStringDelim()) { // Skip over string that doesn't span a line else ignore
                     var delim = NextCh();
@@ -136,18 +151,74 @@ namespace Psw.Scanners
             }
 
             Index = startIndex;  // Failed: Restore Position
-            return LogError($"Invalid Block {blockStart}...{blockEnd} - matching closing '{blockEnd}' not found", "Scan Block");
+            var errorMsg = $"Invalid Block {blockStart}...{blockEnd}, terminator '{blockEnd}' not found\r\n" +
+                           "(May be due to bad nesting or non-terminated comments)";
+            return LogError(errorMsg, "Scan Block");
         }
+
+        //public bool SkipBlockEx(string blockStart, string blockEnd, bool isOpen = false) {
+        //    if (string.IsNullOrWhiteSpace(blockStart) || string.IsNullOrWhiteSpace(blockEnd))
+        //        return LogError("Invalid block delimiters calling SkipBlockEx/ScanBlockEx", "Scan Block");
+
+        //    var matchStrings = new List<string> { blockStart, blockEnd,  };
+        //    int level = 1;
+        //    var startPos = Index;
+
+        //    //string delims = StringDelim + blockStart + blockEnd + '/';
+        //    string delims = StringDelim + blockStart + blockEnd + _scriptComment.CommentStartChars;
+        //    int level = 0;
+        //    int startIndex = Index;
+
+        //    if (isOpen) level++;
+
+        //    while (SkipWSC() && SkipToAny(delims)) {
+        //        if (IsCh(blockStart)) {
+        //            if (level == 0) startIndex = Index;
+        //            level++; continue;
+        //        }
+
+        //        if (IsCh(blockEnd)) {
+        //            level--;
+        //            if (level <= 0) break;
+        //            else continue;
+        //        }
+
+        //        if (IsComment()) continue; // SkipWSC will skip it
+
+        //        //if (IsPeekCh('/')) {
+        //        //    if (IsComment()) continue; // SkipWSC will skip it
+        //        //    else NextCh(); // skip over
+        //        //}
+
+        //        if (IsStringDelim()) { // Skip over string that doesn't span a line else ignore
+        //            var delim = NextCh();
+        //            int pos = Index;
+        //            SkipToAny(delim + _nl);
+        //            if (!IsCh(delim)) Index = pos;
+        //        }
+        //    }
+
+        //    if (level == 0 && _index > startIndex) {
+        //        _tokenStartIndex = startIndex;
+        //        _tokenEndIndex = Index - 1;
+        //        return true;
+        //    }
+
+        //    Index = startIndex;  // Failed: Restore Position
+        //    var errorMsg = $"Invalid Block {blockStart}...{blockEnd}, terminator '{blockEnd}' not found\r\n" +
+        //                   "(May be due to bad nesting or non-terminated comments)";
+        //    return LogError(errorMsg, "Scan Block");
+        //}
 
         /// <summary>
         /// Static method: Return the source string with all line and block comments removed.
         /// </summary>
-        public static string StripComments(string source) {
+        public static string StripComments(string source, ScriptComment scriptComment) {
             var res = new StringBuilder();
-            var scn = new ScriptScanner(source);
+            var scn = new ScriptScanner(source).SetScriptComment(scriptComment);
 
             while (!scn.IsEos) {
-                if (scn.ScanTo('/', true)) {
+                if (scn.ScanToAny(scriptComment.CommentStartChars, true)) {
                     res.Append(scn.Token);
                     if (!scn.IsEos) {
                         if (scn.IsComment()) scn.SkipComment(true);
@@ -258,7 +329,8 @@ namespace Psw.Scanners
             if (!SkipAny(delim)) return false;  // Eos
 
             while (IsComment()) {
-                if (!SkipComment(termNL, true)) return false;
+                //if (!SkipComment(termNL, true)) return false;
+                if (!SkipComment(termNL)) return false;
                 if (termNL && IsEol) return true;
                 if (!SkipAny(delim)) return false;
             }
@@ -268,10 +340,12 @@ namespace Psw.Scanners
         /// <summary>
         /// Query if Index is currently at a comment.
         /// </summary>
-        public bool IsComment() => _Current == '/' && "/*".Contains(PeekCh(1));
+        public bool IsComment() => _scriptComment.IsAtComment;
+
+        //public bool IsComment() => _Current == '/' && "/*".Contains(PeekCh(1));
 
         /// <summary>
-        /// Skip continuous sequence of comments:<br/> 
+        /// Skip consecutive sequence of comments:<br/> 
         /// - Line comment ( //..Eol/Eos ), Block comment ( /*..*/ ) and handles nested block comments.<br/>
         /// - NOTE: Index must currently be positioned at the start of a comment /.<br/>
         /// - Set termNL to true to position Index at the newline after a line comment ( // ), else the newline is skipped.
@@ -280,37 +354,39 @@ namespace Psw.Scanners
         /// True: Comment skipped and Index positioned after comment.<br/>
         /// False: Eos or comment error (missing */ logged as error) - Index unchanged.
         /// </returns>
-        public bool SkipComment(bool termNL = false, bool commentConfirmed = false) {
-            bool isComment = commentConfirmed || IsComment();
+        public bool SkipComment(bool termNL = false) => _scriptComment.SkipWhileComment(termNL);
 
-            while (isComment) {
-                if ('/' == PeekCh(1)) { // Line comment
-                    SkipToEol(!termNL);
-                    if (termNL) return !IsEos;
-                }
+        //public bool SkipComment(bool termNL = false, bool commentConfirmed = false) {
+        //    bool isComment = commentConfirmed || IsComment();
+
+        //    while (isComment) {
+        //        if ('/' == PeekCh(1)) { // Line comment
+        //            SkipToEol(!termNL);
+        //            if (termNL) return !IsEos;
+        //        }
                 
-                else {  // Block comment /*
-                    Advance(2);              // Skip over /*
-                    int restorePos = _index; // Restore position on failure
-                    int nestLevel = 1;       // To handle nesting
+        //        else {  // Block comment /*
+        //            Advance(2);              // Skip over /*
+        //            int restorePos = _index; // Restore position on failure
+        //            int nestLevel = 1;       // To handle nesting
 
-                    while (nestLevel > 0) {
-                        if (!SkipToAnyStr("|*/|/*", true)) { // No closing */ found
-                            LogError("No matching closing block comment */ found - may also be due to bad nesting", "SkipComment");
-                            Index = restorePos;
-                            return false;
-                        }
+        //            while (nestLevel > 0) {
+        //                if (!SkipToAnyStr("|*/|/*", true)) { // No closing */ found
+        //                    LogError("No matching closing block comment */ found - may also be due to bad nesting", "SkipComment");
+        //                    Index = restorePos;
+        //                    return false;
+        //                }
 
-                        if (Match == "*/") nestLevel--;
-                        else nestLevel++;  // Nesting
-                    }
-                }
+        //                if (Match == "*/") nestLevel--;
+        //                else nestLevel++;  // Nesting
+        //            }
+        //        }
 
-                isComment = IsComment();
-            }
+        //        isComment = IsComment();
+        //    }
 
-            return !IsEos;
-        }
+        //    return !IsEos;
+        //}
 
     }
 }

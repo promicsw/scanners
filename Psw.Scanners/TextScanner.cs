@@ -50,6 +50,8 @@ namespace Psw.Scanners
         protected static string _nl = Environment.NewLine; // newline: \r\n or just \n
         protected static char _Eos = '\0';                 // End of source character
 
+        protected ScriptComment _scriptComment = new ScriptComment();
+
         /// <summary>
         /// Get/Set the bound ScanErroLog.
         /// </summary>
@@ -106,14 +108,14 @@ namespace Psw.Scanners
         /// <summary>
         /// Get current token stripped of comments.
         /// </summary>
-        public string StripToken => ScriptScanner.StripComments(Token);
+        public string StripToken => ScriptScanner.StripComments(Token, _scriptComment);
 
         /// <summary>
         /// Get current token trimmed and stripped of comments.
         /// </summary>
-        public string TrimStripToken => ScriptScanner.StripComments(TrimToken);
+        public string TrimStripToken => ScriptScanner.StripComments(TrimToken, _scriptComment);
 
-                /// <summary>
+        /// <summary>
         ///  Manually set the Token start and end index, which will be used to retrieve the Token on the next call:<br/>
         /// - The scanner automatically maintains these indexes for any operation that records a token.<br/>
         /// - This should only be used in special cases (say for extensions). The values are set to 0 (empty Token) if out of range.
@@ -127,7 +129,6 @@ namespace Psw.Scanners
             _tokenEndIndex = endIndex < 0 || endIndex > _length ? _length : endIndex;
         }
 
-       
 
         // Source Management ==================================================
 
@@ -536,6 +537,9 @@ namespace Psw.Scanners
         /// Else false and Logs an error (Index unchanged).
         /// </returns>
         public bool SkipBlock(string blockStart, string blockEnd, bool isOpen = false) {
+            if (string.IsNullOrWhiteSpace(blockStart) || string.IsNullOrWhiteSpace(blockEnd))
+                return LogError("Invalid block delimiters calling SkipBlock/ScanBlock", "Scan Block");
+
             var matchStrings = new List<string> { blockStart, blockEnd };
             int level = 1;
             var startPos = Index;

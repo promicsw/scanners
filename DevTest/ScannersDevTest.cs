@@ -16,7 +16,8 @@ var block3 = @"{|Basic Html and 'controls'
                 |A whole new way... <b>it's a game changer :)</b> }";
 
 //TestScanBlock(block1);
-TestStringBlockScan();
+TestBlockScan();
+//TestStringBlockScan();
 
 var rawBlock = @"```
 Line 1
@@ -77,6 +78,34 @@ bool ScanSample() {
 
     Console.WriteLine($"Result: {funcName}({string.Join(',', prm)}) {{{body}}}");
     return true;
+}
+
+void TestBlockScan() {
+    WriteLine("Test Block Scan:");
+
+
+    void Test(string block, bool isOpen = false) {
+        var scn = new ScriptScanner(block);
+        WriteLine();
+        WriteLine($"  Test: {block}");
+        if (scn.ScanBlock("<>", isOpen)) {
+            WriteLine($"  Token: [{scn.Token}]");
+            WriteLine($"  StipToken: [{scn.StripToken}]");
+            WriteLine($"  Remainder: {scn.LineRemainder()}");
+        }
+        else WriteLine(scn.ErrorLog.AsConsoleError("Fail:"));
+    }
+
+    //Test("<Valid full block>the remainder");
+    //Test("Valid open block>the remainder", true);
+    //Test("<Valid <nested> block>the remainder");
+    Test("<Valid /*with > comment*/ block>the remainder");
+    Test("<Valid /*with > /*nested comment*/*/ block>the remainder");
+    Test("<Invalid /*with bad nested comment block>the remainder");
+
+    Test("Invalid not at block start>the remainder");
+    Test("<Bad <nested block>the remainder");
+    Test("<Bad block the remainder");
 }
 
 void TestStringBlockScan() {
