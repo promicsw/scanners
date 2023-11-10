@@ -13,10 +13,10 @@ var block2 = @"{ // Should retain newlines
 var block3 = @"{|Basic Html and 'controls'
                 |>@LabelItem('Forms:', 'Vertical, Horizontal, Inline and advanced layouts')
                 |NavBar, Menus, Tab and Grid layouts, Cards, Svg etc.
-                |A whole new way... <b>it's a game changer :)</b> }";
+                |A whole new way... <b>it's a game changer :)</b>}";
 
-//TestScanBlock(block1);
-TestBlockScan();
+TestScanBlock(block3);
+//TestBlockScan();
 //TestStringBlockScan();
 
 var rawBlock = @"```
@@ -101,8 +101,11 @@ void TestBlockScan() {
     //Test("<Valid <nested> block>the remainder");
     Test("<Valid /*with > comment*/ block>the remainder");
     Test("<Valid /*with > /*nested comment*/*/ block>the remainder");
-    Test("<Invalid /*with bad nested comment block>the remainder");
+    Test("<Valid 'with > in string'>the remainder");
+    Test("<Valid 'with > in string not closed>the remainder");
+    Test("<Valid '''with > in string not closed>the remainder");
 
+    Test("<Invalid /*with bad nested comment block>the remainder");
     Test("Invalid not at block start>the remainder");
     Test("<Bad <nested block>the remainder");
     Test("<Bad block the remainder");
@@ -134,6 +137,7 @@ void TestStringBlockScan() {
     Test("/*Bad /*nested block*/the remainder");
     Test("/*Bad block the remainder");
 }
+
 // Block scanning tests
 void TestScanBlock(string block) {
     var scn = new ScriptScanner();

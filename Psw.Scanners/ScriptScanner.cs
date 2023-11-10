@@ -21,6 +21,8 @@ namespace Psw.Scanners
     /// </mdoc>
     public class ScriptScanner : TextScanner
     {
+        private ScriptComment _scriptComment = new ScriptComment();
+
         /// <group>Constructor</group>
         /// <summary>
         /// Create a ScripScanner with given source string and 'internal' (errorLog == null) or 'external' ScanErrorLog.
@@ -38,6 +40,19 @@ namespace Psw.Scanners
             _scriptComment = new ScriptComment(this, lineComment, blockCommentStart, blockCommentEnd);
             return this; ;
         }
+
+        // Token ==============================================================
+
+        /// <sgroup>Token operation extensions</sgroup>
+        /// <summary>
+        /// Get current token stripped of comments.
+        /// </summary>
+        public string StripToken => ScriptScanner.StripComments(Token, _scriptComment);
+
+        /// <summary>
+        /// Get current token trimmed and stripped of comments.
+        /// </summary>
+        public string TrimStripToken => ScriptScanner.StripComments(TrimToken, _scriptComment);
 
         // String Delimiter ===================================================
 
@@ -139,9 +154,10 @@ namespace Psw.Scanners
                 if (IsStringDelim()) { // Skip over string that doesn't span a line else ignore
                     var delim = NextCh();
                     int pos = Index;
-                    SkipToAny(delim+_nl);
+                    SkipToAny(delim + _nl);
                     if (!IsCh(delim)) Index = pos;
-                }  
+                }
+                else Advance();  // Skip over char
             }
 
             if (level == 0 && _index > startIndex) {
@@ -319,20 +335,20 @@ namespace Psw.Scanners
         /// - White space: spaceChars + "\r\n" if termNL is false.<br/>
         /// - Set termNL to position Index at the next newline not inside a block comment (/*..*/), else the newlines are also skipped.
         /// </summary>
-        /// <param name="spaceChars">Space characters to build the white space characters from (default: " \t").</param>
+        /// <param name="spaceChars">Characters to regard as white-space (default: " \t").</param>
         /// <returns>
         ///   True: Whitespace and comments skipped and Index directly after.<br/>
         ///   False: Eos or comment error (missing */ logged as error) - Index unchanged.
         /// </returns>
         public bool SkipWSC(bool termNL = false, string spaceChars = " \t") {
-            var delim = spaceChars + (termNL ? "" : "\r\n");
-            if (!SkipAny(delim)) return false;  // Eos
+            var wsChars = spaceChars + (termNL ? "" : "\r\n");
+            if (!SkipWS(wsChars)) return false;  // Eos
 
             while (IsComment()) {
                 //if (!SkipComment(termNL, true)) return false;
                 if (!SkipComment(termNL)) return false;
                 if (termNL && IsEol) return true;
-                if (!SkipAny(delim)) return false;
+                if (!SkipWS(wsChars)) return false; // Eos
             }
             return !IsEos;
         }
@@ -346,13 +362,17 @@ namespace Psw.Scanners
 
         /// <summary>
         /// Skip consecutive sequence of comments:<br/> 
-        /// - Line comment ( //..Eol/Eos ), Block comment ( /*..*/ ) and handles nested block comments.<br/>
-        /// - NOTE: Index must currently be positioned at the start of a comment /.<br/>
-        /// - Set termNL to true to position Index at the newline after a line comment ( // ), else the newline is skipped.
+        /// - NOTE: Index must be positioned at the start of a comment else the operation is ignored.<br/>
+        /// - Comments are defined via `SetScriptComment(...).`<br/>
+        /// - Line comments are skipped to Eol/Eos.<br/>
+        /// - Block comments handle nesting and comments embedded in delimited strings.<br/>
+        /// - Set termNL to true to stop at and preserve the newline, for line comments.
+        /// Else the newline is absorbed/skipped.
         /// </summary>
+        /// <param name="termNL">True to stop at and preserve the newline, for line comments. Else the newline is absorbed/skipped.</param>
         /// <returns>
         /// True: Comment skipped and Index positioned after comment.<br/>
-        /// False: Eos or comment error (missing */ logged as error) - Index unchanged.
+        /// False: Eos or comment error - Index unchanged and error logged.
         /// </returns>
         public bool SkipComment(bool termNL = false) => _scriptComment.SkipWhileComment(termNL);
 

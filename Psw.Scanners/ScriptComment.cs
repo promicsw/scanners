@@ -101,36 +101,20 @@ namespace Psw.Scanners
 
 
 
-        public void SkipLineComment(bool termNL) => _scn.SkipToEol(!termNL);
+        protected void SkipLineComment(bool termNL) => _scn.SkipToEol(!termNL);
 
         /// <summary>
         /// Skips a Block Comment and handles nesting:<br/>
-        /// Note: Index must be at the start of the Block Comment.
         /// </summary>
         /// <returns>
         /// True: No block comment or block comment skipped and Index positioned after comment.<br/>
         /// False: For invalid block comment. Logs error and Index positioned directly after opening block comment.</returns>
-        public bool SkipBlockComment() {
-            if (!IsAtBlockComment) return true;
-            return _scn.SkipBlock(_blockCommentStart, _blockCommentEnd);
+        protected bool SkipBlockComment() => _scn.SkipBlock(_blockCommentStart, _blockCommentEnd);
 
-            //_scn.Index += _blockCommentStart.Length;
-            //int restorePos = _scn.Index; // Restore position on failure
-            //int nestLevel = 1;           // To handle nesting
-
-            //while (nestLevel > 0) {
-            //    if (!_scn.SkipToAnyStr(_blockSkipString, true)) { // No closing block or nested block found
-            //        _scn.LogError($"No matching closing block comment {_blockCommentEnd} found - may also be due to bad nesting", "SkipBlockComment");
-            //        _scn.Index = restorePos;
-            //        return false;
-            //    }
-
-            //    if (_scn.Match == "*/") nestLevel--;
-            //    else nestLevel++;  // Nesting
-            //}
-
-            //return true;
-        }
+        //public bool SkipBlockComment() {
+        //    if (!IsAtBlockComment) return true;
+        //    return _scn.SkipBlock(_blockCommentStart, _blockCommentEnd);
+        //}
 
         /// <summary>
         /// Skip consecutive sequence of Line and Block (may be nested) comments:<br/> 
@@ -145,7 +129,7 @@ namespace Psw.Scanners
             while (IsAtComment) {
                 if (IsAtLineComment) {
                     SkipLineComment(termNL);
-                    if (termNL) return !_scn.IsEos;
+                    if (termNL) break;
                 }
 
                 else if (!SkipBlockComment()) return false;

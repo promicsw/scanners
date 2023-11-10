@@ -50,7 +50,7 @@ namespace Psw.Scanners
         protected static string _nl = Environment.NewLine; // newline: \r\n or just \n
         protected static char _Eos = '\0';                 // End of source character
 
-        protected ScriptComment _scriptComment = new ScriptComment();
+        //protected ScriptComment _scriptComment = new ScriptComment();
 
         /// <summary>
         /// Get/Set the bound ScanErroLog.
@@ -105,15 +105,15 @@ namespace Psw.Scanners
         /// </summary>
         public string TrimToken => Token.Trim();
 
-        /// <summary>
-        /// Get current token stripped of comments.
-        /// </summary>
-        public string StripToken => ScriptScanner.StripComments(Token, _scriptComment);
+        ///// <summary>
+        ///// Get current token stripped of comments.
+        ///// </summary>
+        //public string StripToken => ScriptScanner.StripComments(Token, _scriptComment);
 
-        /// <summary>
-        /// Get current token trimmed and stripped of comments.
-        /// </summary>
-        public string TrimStripToken => ScriptScanner.StripComments(TrimToken, _scriptComment);
+        ///// <summary>
+        ///// Get current token trimmed and stripped of comments.
+        ///// </summary>
+        //public string TrimStripToken => ScriptScanner.StripComments(TrimToken, _scriptComment);
 
         /// <summary>
         ///  Manually set the Token start and end index, which will be used to retrieve the Token on the next call:<br/>
