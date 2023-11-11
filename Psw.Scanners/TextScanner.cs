@@ -548,7 +548,7 @@ namespace Psw.Scanners
                 if (IsEol || !IsString(blockStart)) return true;  // Not at blockStart: Do noting and return true;
             }
 
-            while (SkipToAnyStr(matchStrings, true) && level > 0) {
+            while (level > 0 && SkipToAnyStr(matchStrings, true)) {
                 if (Match == blockStart) level++;
                 else level--;
             }
@@ -909,7 +909,8 @@ namespace Psw.Scanners
 
             int startPos = endPos;
 
-            while (startPos >= 0 && lastNoofLines > 0) {
+            //while (startPos >= 0 && lastNoofLines > 0) {
+            while (startPos > 0 && lastNoofLines > 0) {
                 startPos = Source.LastIndexOf(_nl[0], startPos - 1);
                 lastNoofLines--;
             }
