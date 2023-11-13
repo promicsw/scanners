@@ -15,11 +15,14 @@
     <PackageTags>text scanner;script scanner;lexer;parsing;c#;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>Nuget.md</PackageReadmeFile>
-    <PackageReleaseNotes>ILogScanError changes</PackageReleaseNotes>
+    <PackageReleaseNotes>Configurable comments : new feature for ScriptScanner. 
+Minor bug fix in ScanBlock (string version). 
+Performance improvements.
+</PackageReleaseNotes>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageOutputPath>d:\PromicSW_GitHub\LocalNuget\</PackageOutputPath>
-    <Version>1.0.3</Version>
+    <Version>1.1.0</Version>
     <PackageIcon>PswLogo.png</PackageIcon>
   </PropertyGroup>
 

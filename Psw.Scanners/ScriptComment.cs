@@ -3,8 +3,6 @@
 // Licensed under the MIT License (MIT).
 // -----------------------------------------------------------------------------
 
-#define FUNC_VER
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,26 +13,33 @@ using System.Threading.Tasks;
 
 namespace Psw.Scanners
 {
+    /// <summary>
+    /// Manages comments for the ScriptScanner.
+    /// </summary>
     public class ScriptComment
     {
         private TextScanner _scn;
 
-#if FUNC_VER
         private Func<bool> _checkLineComment = () => false;
         private Func<bool> _checkBlockComment = () => false;
 
         private string _lineComment;
         private string _blockCommentStart, _blockCommentEnd;
-        private string _blockSkipString; 
 
         public string CommentStartChars { get; private set; } = string.Empty;
 
-        public ScriptComment() { }
+        internal ScriptComment() { }
 
+        /// <summary>
+        /// ScriptComment Constructor:<br/>
+        /// - For block comments Start and End must both be valid to enable block comments. 
+        /// </summary>
+        /// <param name="scn">Hosting Text/Script scanner.</param>
+        /// <param name="lineComment">Line comment (null/empty for none).</param>
+        /// <param name="blockCommentStart">Block comment start (null/empty for none).</param>
+        /// <param name="blockCommentEnd">Block comment end (null/empty for none).</param>
         public ScriptComment(TextScanner scn, string lineComment = "//", string blockCommentStart = "/*", string blockCommentEnd = "*/") {
             _scn = scn;
-
-            //var isBlockComment = !string.IsNullOrWhiteSpace(blockCommentStart) && !string.IsNullOrWhiteSpace(blockCommentEnd);
 
             // Line Comment:
             if (!string.IsNullOrWhiteSpace(lineComment)) { 
@@ -49,72 +54,32 @@ namespace Psw.Scanners
                 _blockCommentStart = blockCommentStart; 
                 _blockCommentEnd = blockCommentEnd;
                 _checkBlockComment = () => _scn.IsString(blockCommentStart, false);
-                _blockSkipString = $"|{blockCommentEnd}|{blockCommentStart}";
                 if (CommentStartChars.Length > 0 && CommentStartChars[0] != blockCommentStart[0]) CommentStartChars += blockCommentStart[0];
             }
             else _checkBlockComment = () => false;
         }
 
-        public bool IsAtLineComment  => _checkLineComment();
-        public bool IsAtBlockComment => _checkBlockComment();
-        public bool IsAtComment      => IsAtLineComment || IsAtBlockComment;
+        internal bool IsAtLineComment  => _checkLineComment();
+        internal bool IsAtBlockComment => _checkBlockComment();
+        internal bool IsAtComment      => IsAtLineComment || IsAtBlockComment;
 
-        public ScriptComment Clone(TextScanner scn) => new ScriptComment(scn, _lineComment, _blockCommentStart, _blockCommentEnd);
-#else
-        private string _lineComment;
-        private string _blockCommentStart;
-        private string _blockCommentEnd;
-        private string _blockSkipString;
+        internal ScriptComment Clone(TextScanner scn) => new ScriptComment(scn, _lineComment, _blockCommentStart, _blockCommentEnd);
 
-        private bool _isLineComment, _isBlockComment, _isComment;
-
-        public ScriptComment(TextScanner scn, string lineComment = "//", string blockCommentStart = "/*", string blockCommentEnd = "*/")
-        {
-            _scn = scn;
-            _lineComment = lineComment;
-            _blockCommentStart = blockCommentStart;
-            _blockCommentEnd = blockCommentEnd;
-
-            _isLineComment = !string.IsNullOrWhiteSpace(_lineComment);
-            _isBlockComment = !string.IsNullOrWhiteSpace(_blockCommentStart) && !string.IsNullOrWhiteSpace(_blockCommentEnd);
-            _isComment = _isLineComment || _isBlockComment;
-
-            if (_isBlockComment) _blockSkipString = $"|{_blockCommentEnd}|{_blockCommentStart}";
-        }
-
-        public bool IsAtLineComment  => _isLineComment && _scn.IsString(_lineComment, false);
-        public bool IsAtBlockComment => _isBlockComment && _scn.IsString(_blockCommentStart, false);
-        public bool IsAtComment      => IsAtLineComment || IsAtBlockComment;
-#endif
-
-        //public bool IsLineComment  => !string.IsNullOrWhiteSpace(LineComment);
-        //public bool IsBlockComment => !string.IsNullOrWhiteSpace(BlockCommentStart) && !string.IsNullOrWhiteSpace(BlockCommentEnd);
-        //public bool IsComments     => IsLineComment && IsBlockComment;
-
-        //public string CommentStartChars() {
-        //    string csc = "";
-
-        //    if (IsLineComment) csc += LineComment[0];
-        //    if (IsBlockComment && csc.Length > 0 && csc[0] != BlockCommentStart[0]) csc += BlockCommentStart[0];
-        //    return csc;
-        //}
-
-
-
-        protected void SkipLineComment(bool termNL) => _scn.SkipToEol(!termNL);
+        /// <summary>
+        /// Skip Line comment:<br/>
+        /// - Assumes at the line comment without checking.
+        /// - Skips to Eol and absorbs the NL it termNL is false, else retains the NL
+        /// </summary>
+        private void _SkipLineComment(bool termNL) => _scn.SkipToEol(!termNL);
 
         /// <summary>
         /// Skips a Block Comment and handles nesting:<br/>
+        /// - Assumes at the start of a block comment without checking
         /// </summary>
         /// <returns>
         /// True: No block comment or block comment skipped and Index positioned after comment.<br/>
         /// False: For invalid block comment. Logs error and Index positioned directly after opening block comment.</returns>
-        protected bool SkipBlockComment() => _scn.SkipBlock(_blockCommentStart, _blockCommentEnd);
-
-        //public bool SkipBlockComment() {
-        //    if (!IsAtBlockComment) return true;
-        //    return _scn.SkipBlock(_blockCommentStart, _blockCommentEnd);
-        //}
+        private bool _SkipBlockComment() => _scn.SkipBlock(_blockCommentStart, _blockCommentEnd);
 
         /// <summary>
         /// Skip consecutive sequence of Line and Block (may be nested) comments:<br/> 
@@ -123,16 +88,16 @@ namespace Psw.Scanners
         /// </summary>
         /// <returns>
         /// True: Comments skipped and Index positioned after comments.<br/>
-        /// False: Eos or comment error (missing */ logged as error) - Index unchanged.
+        /// False: Eos or comment error (comment error logged) - Index unchanged.
         /// </returns>
-        public bool SkipWhileComment(bool termNL = false) {
+        internal bool SkipWhileComment(bool termNL = false) {
             while (IsAtComment) {
                 if (IsAtLineComment) {
-                    SkipLineComment(termNL);
+                    _SkipLineComment(termNL);
                     if (termNL) break;
                 }
 
-                else if (!SkipBlockComment()) return false;
+                else if (!_SkipBlockComment()) return false;
             }
 
             return !_scn.IsEos;

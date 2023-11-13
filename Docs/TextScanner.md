@@ -27,9 +27,7 @@ The Text Scanner is used to extract *Tokens* from text, check for strings or cha
 | ***Token operations:*** | *__Notes:__ Several scanning operations record the scanned text in **Token**. The following services are used to operate on this token.* |
 | ``P: bool IsToken`` | Check if a Token currently exists.<br/> |
 | ``M: void SetTokenRange(int startIndex, int endIndex)`` | Manually set the Token start and end index, which will be used to retrieve the Token on the next call:<br/>- The scanner automatically maintains these indexes for any operation that records a token.<br/>- This should only be used in special cases (say for extensions). The values are set to 0 (empty Token) if out of range.<br/><br/>**Parameters:**<br/><code>startIndex:</code> The zero-based starting position, or less-than zero for the current index position.<br/><code>endIndex:</code> The zero-based ending position. Adjusts to Eos if less-than zero or out of range.<br/> |
-| ``P: string StripToken`` | Get current token stripped of comments.<br/> |
 | ``P: string Token`` | Get the current Token else string.Empty for none.<br/> |
-| ``P: string TrimStripToken`` | Get current token trimmed and stripped of comments.<br/> |
 | ``P: string TrimToken`` | Get current token Trimmed.<br/> |
 | ``M: bool ValidToken()`` | Check if the current Token is not null or WhiteSpace.<br/> |
 | ***Source Management:*** |  |

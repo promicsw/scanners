@@ -13,7 +13,7 @@ namespace Psw.Scanners
     /// </summary>
     /// <mdoc>
     /// > **Incorporates the following:**
-    /// > - Handles *comments*: Line `//...` and block `/*...*/` (handles nesting).
+    /// > - Handles *comments*: Line and block (with nesting) comments.
     /// > - Skip whitespace and comments.
     /// > - Scan delimited strings and blocks.
     /// > - Standard identifier scanning.
@@ -31,11 +31,29 @@ namespace Psw.Scanners
 
         // Comment Configuration ==============================================
 
+        /// <group>Comment configuration</group>
+        /// <groupdescr>
+        /// ScriptScanner supports Line (default `//`) and Block (default `/* ... */`) comments 
+        /// which may be reconfigured below.
+        /// </groupdescr>
+        /// <summary>
+        /// Set comment configuration via a previously defined ScriptComment.
+        /// </summary>
+        /// <param name="scriptComment">ScriptComment object</param>
+        /// <returns>ScriptScanner for fluent chaining.</returns>
         public ScriptScanner SetScriptComment(ScriptComment scriptComment) {
             _scriptComment = scriptComment.Clone(this);
             return this;
         }
 
+        /// <summary>
+        /// Set comment configuration:<br/>
+        /// - For block comments Start and End must both be valid to enable block comments. 
+        /// </summary>
+        /// <param name="lineComment">Line comment (null/empty for none).</param>
+        /// <param name="blockCommentStart">Block comment start (null/empty for none).</param>
+        /// <param name="blockCommentEnd">Block comment end (null/empty for none).</param>
+        /// <returns>ScriptScanner for fluent chaining.</returns>
         public ScriptScanner SetScriptComment(string lineComment = "//", string blockCommentStart = "/*", string blockCommentEnd = "*/") { 
             _scriptComment = new ScriptComment(this, lineComment, blockCommentStart, blockCommentEnd);
             return this; ;
@@ -63,7 +81,7 @@ namespace Psw.Scanners
         public string StringDelim { get; set; } = "\"'`";
 
         /// <summary>
-        /// Query if character at Index is one of the StringDelim values.
+        /// Query if character at Index is one of the StringDelimiters.
         /// </summary>
         public bool IsStringDelim() => StringDelim.Contains(_Current);
 
@@ -100,13 +118,13 @@ namespace Psw.Scanners
             => IsStringDelim() ? StrLit() : ScanToAny(termChars, orToEos) && ValidToken();
 
         /// <summary>
-        /// Scan Standard Identifier of the form: (letter | _)+ (letterordigit | _)*.
+        /// Scan Standard Identifier of the form: <code>(letter | _)+ (letterordigit | _)*</code>.
         /// </summary>
         /// <returns>True for valid identifier (available via Token) else false.</returns>
         public bool StdIdent() => ScanWhile((scn, ch, i) => char.IsLetter(ch) || '_' == ch || i > 0 && char.IsLetterOrDigit(ch));
 
         /// <summary>
-        /// Scan Standard Identifier of the form: (letter | _)+ (letterordigit | _ | -)*.
+        /// Scan Standard Identifier of the form: <code>(letter | _)+ (letterordigit | _ | -)*</code>.
         /// </summary>
         /// <returns>True for valid identifier (available via Token) else false.</returns>
         public bool StdIdent2() => ScanWhile((scn, ch, i) => char.IsLetter(ch) || '_' == ch || i > 0 && ('-' == ch || char.IsLetterOrDigit(ch)));
@@ -125,7 +143,6 @@ namespace Psw.Scanners
             if (!ValidBlockDelims(blockDelims)) return LogError($"Invalid Block delimiters \"{blockDelims}\" defined in call to ScanBlock", "Scan Block");
 
             char blockStart = blockDelims[0], blockEnd = blockDelims[1];
-            //string delims = StringDelim + blockStart + blockEnd + '/';
             string delims = StringDelim + blockStart + blockEnd + _scriptComment.CommentStartChars;
             int level = 0;
             int startIndex = Index;
@@ -146,18 +163,13 @@ namespace Psw.Scanners
 
                 if (IsComment()) continue; // SkipWSC will skip it
 
-                //if (IsPeekCh('/')) {
-                //    if (IsComment()) continue; // SkipWSC will skip it
-                //    else NextCh(); // skip over
-                //}
-
                 if (IsStringDelim()) { // Skip over string that doesn't span a line else ignore
                     var delim = NextCh();
                     int pos = Index;
                     SkipToAny(delim + _nl);
                     if (!IsCh(delim)) Index = pos;
                 }
-                else Advance();  // Skip over char
+                else Advance();  // Default: Skip over char
             }
 
             if (level == 0 && _index > startIndex) {
@@ -171,60 +183,6 @@ namespace Psw.Scanners
                            "(May be due to bad nesting or non-terminated comments)";
             return LogError(errorMsg, "Scan Block");
         }
-
-        //public bool SkipBlockEx(string blockStart, string blockEnd, bool isOpen = false) {
-        //    if (string.IsNullOrWhiteSpace(blockStart) || string.IsNullOrWhiteSpace(blockEnd))
-        //        return LogError("Invalid block delimiters calling SkipBlockEx/ScanBlockEx", "Scan Block");
-
-        //    var matchStrings = new List<string> { blockStart, blockEnd,  };
-        //    int level = 1;
-        //    var startPos = Index;
-
-        //    //string delims = StringDelim + blockStart + blockEnd + '/';
-        //    string delims = StringDelim + blockStart + blockEnd + _scriptComment.CommentStartChars;
-        //    int level = 0;
-        //    int startIndex = Index;
-
-        //    if (isOpen) level++;
-
-        //    while (SkipWSC() && SkipToAny(delims)) {
-        //        if (IsCh(blockStart)) {
-        //            if (level == 0) startIndex = Index;
-        //            level++; continue;
-        //        }
-
-        //        if (IsCh(blockEnd)) {
-        //            level--;
-        //            if (level <= 0) break;
-        //            else continue;
-        //        }
-
-        //        if (IsComment()) continue; // SkipWSC will skip it
-
-        //        //if (IsPeekCh('/')) {
-        //        //    if (IsComment()) continue; // SkipWSC will skip it
-        //        //    else NextCh(); // skip over
-        //        //}
-
-        //        if (IsStringDelim()) { // Skip over string that doesn't span a line else ignore
-        //            var delim = NextCh();
-        //            int pos = Index;
-        //            SkipToAny(delim + _nl);
-        //            if (!IsCh(delim)) Index = pos;
-        //        }
-        //    }
-
-        //    if (level == 0 && _index > startIndex) {
-        //        _tokenStartIndex = startIndex;
-        //        _tokenEndIndex = Index - 1;
-        //        return true;
-        //    }
-
-        //    Index = startIndex;  // Failed: Restore Position
-        //    var errorMsg = $"Invalid Block {blockStart}...{blockEnd}, terminator '{blockEnd}' not found\r\n" +
-        //                   "(May be due to bad nesting or non-terminated comments)";
-        //    return LogError(errorMsg, "Scan Block");
-        //}
 
         /// <summary>
         /// Static method: Return the source string with all line and block comments removed.
@@ -331,21 +289,22 @@ namespace Psw.Scanners
         public bool SkipWS(string wsChars = " \r\n\t") => SkipAny(wsChars);
 
         /// <summary>
-        /// Skip White Space characters and comments //... or /*..*/ (handles nested comments):<br/>
+        /// Skip White Space and comments:<br/>
         /// - White space: spaceChars + "\r\n" if termNL is false.<br/>
-        /// - Set termNL to position Index at the next newline not inside a block comment (/*..*/), else the newlines are also skipped.
+        /// - Block comments handle nesting and comments embedded in delimited strings.<br/>
+        /// - Set termNL to true to stop at a newline, including the newline at the end of a line comment.
         /// </summary>
+        /// <param name="termNL">True to stop at a newline, including the newline at the end of a line comment.</param>
         /// <param name="spaceChars">Characters to regard as white-space (default: " \t").</param>
         /// <returns>
-        ///   True: Whitespace and comments skipped and Index directly after.<br/>
-        ///   False: Eos or comment error (missing */ logged as error) - Index unchanged.
+        ///   True: Whitespace and comments skipped and Index directly after, or possibly at a newline if termNL is true.<br/>
+        ///   False: Eos or comment error - Index unchanged and error logged (if comment error).
         /// </returns>
         public bool SkipWSC(bool termNL = false, string spaceChars = " \t") {
             var wsChars = spaceChars + (termNL ? "" : "\r\n");
             if (!SkipWS(wsChars)) return false;  // Eos
 
             while (IsComment()) {
-                //if (!SkipComment(termNL, true)) return false;
                 if (!SkipComment(termNL)) return false;
                 if (termNL && IsEol) return true;
                 if (!SkipWS(wsChars)) return false; // Eos
@@ -358,55 +317,20 @@ namespace Psw.Scanners
         /// </summary>
         public bool IsComment() => _scriptComment.IsAtComment;
 
-        //public bool IsComment() => _Current == '/' && "/*".Contains(PeekCh(1));
 
         /// <summary>
         /// Skip consecutive sequence of comments:<br/> 
         /// - NOTE: Index must be positioned at the start of a comment else the operation is ignored.<br/>
-        /// - Comments are defined via `SetScriptComment(...).`<br/>
         /// - Line comments are skipped to Eol/Eos.<br/>
         /// - Block comments handle nesting and comments embedded in delimited strings.<br/>
-        /// - Set termNL to true to stop at and preserve the newline, for line comments.
-        /// Else the newline is absorbed/skipped.
+        /// - Set termNL to true to stop at a newline, including the newline at the end of a line comment.
         /// </summary>
-        /// <param name="termNL">True to stop at and preserve the newline, for line comments. Else the newline is absorbed/skipped.</param>
+        /// <param name="termNL">True to stop at a newline, including the newline at the end of a line comment.</param>
         /// <returns>
-        /// True: Comment skipped and Index positioned after comment.<br/>
-        /// False: Eos or comment error - Index unchanged and error logged.
+        /// True: Comment skipped and Index positioned after comment, or possibly at a newline if termNL is true.<br/>
+        /// False: Eos or comment error - Index unchanged and error logged (if comment error).
         /// </returns>
         public bool SkipComment(bool termNL = false) => _scriptComment.SkipWhileComment(termNL);
-
-        //public bool SkipComment(bool termNL = false, bool commentConfirmed = false) {
-        //    bool isComment = commentConfirmed || IsComment();
-
-        //    while (isComment) {
-        //        if ('/' == PeekCh(1)) { // Line comment
-        //            SkipToEol(!termNL);
-        //            if (termNL) return !IsEos;
-        //        }
-                
-        //        else {  // Block comment /*
-        //            Advance(2);              // Skip over /*
-        //            int restorePos = _index; // Restore position on failure
-        //            int nestLevel = 1;       // To handle nesting
-
-        //            while (nestLevel > 0) {
-        //                if (!SkipToAnyStr("|*/|/*", true)) { // No closing */ found
-        //                    LogError("No matching closing block comment */ found - may also be due to bad nesting", "SkipComment");
-        //                    Index = restorePos;
-        //                    return false;
-        //                }
-
-        //                if (Match == "*/") nestLevel--;
-        //                else nestLevel++;  // Nesting
-        //            }
-        //        }
-
-        //        isComment = IsComment();
-        //    }
-
-        //    return !IsEos;
-        //}
 
     }
 }

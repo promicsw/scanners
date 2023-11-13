@@ -15,7 +15,7 @@ var block3 = @"{|Basic Html and 'controls'
                 |NavBar, Menus, Tab and Grid layouts, Cards, Svg etc.
                 |A whole new way... <b>it's a game changer :)</b>}";
 
-TestScanBlock(block3);
+TestScanBlock(block2);
 //TestBlockScan();
 //TestStringBlockScan();
 

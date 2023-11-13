@@ -105,16 +105,6 @@ namespace Psw.Scanners
         /// </summary>
         public string TrimToken => Token.Trim();
 
-        ///// <summary>
-        ///// Get current token stripped of comments.
-        ///// </summary>
-        //public string StripToken => ScriptScanner.StripComments(Token, _scriptComment);
-
-        ///// <summary>
-        ///// Get current token trimmed and stripped of comments.
-        ///// </summary>
-        //public string TrimStripToken => ScriptScanner.StripComments(TrimToken, _scriptComment);
-
         /// <summary>
         ///  Manually set the Token start and end index, which will be used to retrieve the Token on the next call:<br/>
         /// - The scanner automatically maintains these indexes for any operation that records a token.<br/>
