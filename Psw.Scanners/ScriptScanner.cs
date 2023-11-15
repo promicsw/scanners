@@ -56,7 +56,7 @@ namespace Psw.Scanners
         /// <returns>ScriptScanner for fluent chaining.</returns>
         public ScriptScanner SetScriptComment(string lineComment = "//", string blockCommentStart = "/*", string blockCommentEnd = "*/") { 
             _scriptComment = new ScriptComment(this, lineComment, blockCommentStart, blockCommentEnd);
-            return this; ;
+            return this;
         }
 
         // Token ==============================================================
