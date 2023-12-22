@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net6.0;net7.0</TargetFrameworks>  
+	<TargetFrameworks>net6.0;net8.0</TargetFrameworks>  
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
@@ -15,14 +15,12 @@
     <PackageTags>text scanner;script scanner;lexer;parsing;c#;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>Nuget.md</PackageReadmeFile>
-    <PackageReleaseNotes>Configurable comments : new feature for ScriptScanner. 
-Minor bug fix in ScanBlock (string version). 
-Performance improvements.
+    <PackageReleaseNotes>Net 8 support added, net 7 removed.
 </PackageReleaseNotes>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageOutputPath>d:\PromicSW_GitHub\LocalNuget\</PackageOutputPath>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <PackageIcon>PswLogo.png</PackageIcon>
   </PropertyGroup>
 
